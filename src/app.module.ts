@@ -6,6 +6,7 @@ import { MoviesModule } from './movies/movies.module';
 import { MultiFactorAuthModule } from './multi-factor-auth/multi-factor-auth.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
+import { CommonModule } from './common/common.module';
 import config from './config';
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import config from './config';
     MoviesModule,
     MultiFactorAuthModule,
     DatabaseModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

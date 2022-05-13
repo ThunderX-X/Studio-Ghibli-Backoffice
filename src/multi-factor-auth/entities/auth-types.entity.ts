@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'code_types' })
-export class CodeType {
+@Entity({ name: 'auth_types' })
+export class AuthType {
   @PrimaryGeneratedColumn()
   id: number;
 

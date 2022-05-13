@@ -18,7 +18,7 @@ export default abstract class CrudService<EntityClass> {
     return this._repository;
   }
 
-  async findAll(
+  protected async findAll(
     filters: FindConditions<EntityClass> = {},
     relations: string[] = [],
   ): Promise<EntityClass[]> {
@@ -28,12 +28,15 @@ export default abstract class CrudService<EntityClass> {
     });
   }
 
-  async findOneById(
-    id: number,
+  protected async findOneById(
+    id: any,
     filters: FindConditions<EntityClass> = {},
     relations: string[] = [],
   ): Promise<EntityClass> {
-    const entity = this.repository.findOneOrFail({ relations });
+    const entity = this.repository.findOneOrFail(id, {
+      relations,
+      where: filters,
+    });
     if (!entity)
       throw new NotFoundException(
         `Can't find the row with id: ${id} and conditions ${filters}`,
@@ -41,13 +44,13 @@ export default abstract class CrudService<EntityClass> {
     return entity;
   }
 
-  async update(id: number, changes: any) {
+  protected async modify(id: any, changes: any) {
     const entityToUpdate: EntityClass = await this.findOneById(id);
     this.repository.merge(entityToUpdate, changes);
     return await this.repository.save(entityToUpdate as any);
   }
 
-  async delete(id: number) {
+  protected async remove(id: any) {
     return this.repository.delete(id);
   }
 }

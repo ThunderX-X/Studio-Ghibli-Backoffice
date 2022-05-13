@@ -1,3 +1,4 @@
 export interface TwoFactorAuthentication {
-  run(user_id: Number): any;
+  generate(userId: number, params): Promise<boolean>;
+  validate(userId: number, params): Promise<boolean>;
 }

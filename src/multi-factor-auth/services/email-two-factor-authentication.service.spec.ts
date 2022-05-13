@@ -9,7 +9,9 @@ describe('EmailTwoFactorAuthenticationService', () => {
       providers: [EmailTwoFactorAuthenticationService],
     }).compile();
 
-    service = module.get<EmailTwoFactorAuthenticationService>(EmailTwoFactorAuthenticationService);
+    service = module.get<EmailTwoFactorAuthenticationService>(
+      EmailTwoFactorAuthenticationService,
+    );
   });
 
   it('should be defined', () => {
