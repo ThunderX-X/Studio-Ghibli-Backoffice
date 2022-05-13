@@ -2,6 +2,10 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from '../config';
+import { AuthTypeUser } from './entities/auth-types-user.entity';
+import { AuthType } from './entities/auth-types.entity';
+import { MultiFactorAuthCode } from './entities/multi-factor-auth-codes.entity';
+import { User } from './entities/user.entity';
 
 @Global()
 @Module({
@@ -23,6 +27,12 @@ import config from '../config';
         };
       },
     }),
+    TypeOrmModule.forFeature([
+      AuthTypeUser,
+      AuthType,
+      MultiFactorAuthCode,
+      User,
+    ]),
   ],
   exports: [TypeOrmModule],
   providers: [],

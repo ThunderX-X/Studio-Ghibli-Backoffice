@@ -7,6 +7,7 @@ import { MultiFactorAuthModule } from './multi-factor-auth/multi-factor-auth.mod
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
+import { AuthModule } from './auth/auth.module';
 import config from './config';
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import config from './config';
     MultiFactorAuthModule,
     DatabaseModule,
     CommonModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

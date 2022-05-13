@@ -1,9 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { MultiFactorAuthCode } from '../entities/multi-factor-auth-codes.entity';
+import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthCodesService } from './auth-codes.service';
-import { TwoFactorAuthentication } from '../interfaces/TwoFactorAuthentication';
+import {
+  GenerateOperationStatus,
+  TwoFactorAuthentication,
+} from '../interfaces/TwoFactorAuthentication';
 import { EmailService } from '../../common/email.service';
 import { UsersService } from '../../users/services/users.service';
 import { CryptoService } from '../../common/crypto.service';
@@ -12,17 +15,18 @@ import { AuthCodeTypes } from '../enums/auth-codes.enum';
 const LOGIN_CODE_SIZE = 10;
 
 @Injectable()
-class EmailTwoFactorAuthenticationService implements TwoFactorAuthentication {
+export class EmailTwoFactorAuthenticationService
+  implements TwoFactorAuthentication
+{
   constructor(
     @InjectRepository(MultiFactorAuthCode)
     private readonly authCodesRepo: Repository<MultiFactorAuthCode>,
-    @Inject(AuthCodesService)
     private readonly authCodeService: AuthCodesService,
-    @Inject(EmailService) private readonly emailService: EmailService,
+    private readonly emailService: EmailService,
     private readonly userService: UsersService,
   ) {}
 
-  async validate(userId: number, { code }): Promise<boolean> {
+  async validate(userId: number, code: string): Promise<boolean> {
     const hashedCode = CryptoService.getHash(code);
     const userCode = await this.getUserCode(userId, hashedCode);
     if (userCode) {
@@ -31,15 +35,15 @@ class EmailTwoFactorAuthenticationService implements TwoFactorAuthentication {
     return this.isValid(userCode);
   }
 
-  async generate(userId: number): Promise<boolean> {
+  async generate(userId: number): Promise<GenerateOperationStatus> {
     try {
       const loginCode = CryptoService.generateRandomString(LOGIN_CODE_SIZE);
       const hashedCode = CryptoService.getHash(loginCode);
       await this.saveUserCode(userId, hashedCode);
       await this.sendEmailToUser(userId, loginCode);
-      return true;
-    } catch (Exception) {
-      return false;
+      return { generated: true, data: null };
+    } catch (error) {
+      return { generated: false, data: error };
     }
   }
 
@@ -95,5 +99,3 @@ class EmailTwoFactorAuthenticationService implements TwoFactorAuthentication {
     });
   }
 }
-
-export { EmailTwoFactorAuthenticationService };

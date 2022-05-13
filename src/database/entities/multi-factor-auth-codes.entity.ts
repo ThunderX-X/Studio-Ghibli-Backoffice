@@ -1,4 +1,4 @@
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../database/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryColumn, Unique } from 'typeorm';
 import { AuthType } from './auth-types.entity';
 

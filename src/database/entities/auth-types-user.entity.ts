@@ -1,9 +1,9 @@
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../database/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { AuthType } from './auth-types.entity';
 
 @Entity({ name: 'auth_types_user' })
-class AuthTypeUser {
+export class AuthTypeUser {
   @PrimaryGeneratedColumn()
   id: number;
 

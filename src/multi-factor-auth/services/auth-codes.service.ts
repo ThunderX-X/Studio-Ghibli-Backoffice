@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import CrudService from 'src/common/crud-service';
-import { FindConditions, Repository } from 'typeorm';
-import { MultiFactorAuthCode } from '../entities/multi-factor-auth-codes.entity';
+import { FindConditions } from 'typeorm';
+import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 
 @Injectable()
@@ -20,5 +20,14 @@ export class AuthCodesService extends CrudService<MultiFactorAuthCode> {
       userId: userId,
     };
     return super.findOneById(code, where);
+  }
+
+  async findOneCode(
+    codeType: AuthCodeTypes,
+    userId: number,
+  ): Promise<MultiFactorAuthCode> {
+    const codes = await super.findAll({ codeType, userId });
+    if (codes.length > 1) throw new Error('More than one code found');
+    return codes[0];
   }
 }

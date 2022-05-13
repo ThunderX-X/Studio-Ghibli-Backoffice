@@ -32,6 +32,8 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.0.3",
     "class-validator": "^0.13.2",
+    "hi-base32": "^0.5.1",
+    "hotp": "^3.0.0",
     "install": "^0.13.0",
     "nodemailer": "^6.7.5",
     "npm-run-all": "^4.1.5",

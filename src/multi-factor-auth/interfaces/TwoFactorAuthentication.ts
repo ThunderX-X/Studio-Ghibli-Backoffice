@@ -1,4 +1,8 @@
+export type GenerateOperationStatus = {
+  generated: boolean;
+  data: any;
+};
 export interface TwoFactorAuthentication {
-  generate(userId: number, params): Promise<boolean>;
-  validate(userId: number, params): Promise<boolean>;
+  generate(userId: number): Promise<GenerateOperationStatus>;
+  validate(userId: number, code: string): Promise<boolean>;
 }
