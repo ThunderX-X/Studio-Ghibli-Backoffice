@@ -11,4 +11,9 @@ export class UsersService extends CrudService<User> {
   async findOne(userId: number) {
     return await super.findOneById(userId);
   }
+
+  async findByEmail(email: string) {
+    const user = await super.findAll({ email });
+    return user[0];
+  }
 }

@@ -21,8 +21,8 @@ export class TwoFactorAuthService {
   ) {}
 
   getAvalilableAuths(userId: number) {
-    this.authTypeUserRepo.find({
-      relations: ['auth_types'],
+    return this.authTypeUserRepo.find({
+      relations: ['authTypeId'],
       where: { userId },
     });
   }

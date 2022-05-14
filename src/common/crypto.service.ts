@@ -1,8 +1,4 @@
-import { Inject } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 import * as crypto from 'crypto';
-import { buffer } from 'stream/consumers';
-import config from '../config';
 
 export class CryptoService {
   static generateRandomNumber(lenght: number) {

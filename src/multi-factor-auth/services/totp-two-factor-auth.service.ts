@@ -41,7 +41,7 @@ export class TotpTwoFactorAuthService implements TwoFactorAuthentication {
     const key = await this.getKey(userId);
     const actualCounter = this.getActualCounter();
     const actualCode = hotp(key, actualCounter);
-    return actualCode === code;
+    return actualCode == code;
   }
 
   private getActualCounter(delaySeconds = 1) {
