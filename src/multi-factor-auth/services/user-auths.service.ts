@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import CrudService from 'src/common/crud-service';
 import { AuthTypeUser } from 'src/database/entities/auth-types-user.entity';
-import { Repository } from 'typeorm';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 
 @Injectable()
@@ -25,5 +23,9 @@ export class UserAuthsService extends CrudService<AuthTypeUser> {
 
   async delete(userId: number, codeType: AuthCodeTypes) {
     return await super.removeByConditions({ userId, authTypeId: codeType });
+  }
+
+  async getAllByUser(userId: number) {
+    return super.getAll({ userId }, ['authTypeId']);
   }
 }

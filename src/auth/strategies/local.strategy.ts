@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { TwoFactorAuthService } from '../../multi-factor-auth/services/two-factor-auth.service';
 import config from '../../config';
 import { ConfigType } from '@nestjs/config';
+import { Payload } from '../models/payload.model';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'Local') {
   constructor(
@@ -19,6 +20,9 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'Local') {
   }
 
   async validate(email: string, password: string) {
+    //Passport pass 'any' in params, to provent errors call toString for guarantee strings
+    email = email.toString();
+    password = password.toString();
     const user = await this.authService.validateUserAndPassword(
       email,
       password,
@@ -29,7 +33,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'Local') {
     );
     const twoFactorEnabled =
       this.configService.requiredTwoFactor || availableAuths.length > 0;
-    const payload = {
+    const payload: Payload = {
       sub: user.id,
       twoFactor: twoFactorEnabled,
       twoFactorAuth: false,

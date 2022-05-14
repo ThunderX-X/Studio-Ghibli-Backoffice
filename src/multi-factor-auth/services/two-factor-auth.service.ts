@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { AuthTypeUser } from '../../database/entities/auth-types-user.entity';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 import { TwoFactorAuthentication } from '../interfaces/TwoFactorAuthentication';
 import { EmailTwoFactorAuthenticationService } from './email-two-factor-authentication.service';
 import { TotpTwoFactorAuthService } from './totp-two-factor-auth.service';
+import { UserAuthsService } from './user-auths.service';
 
 const mapCodeToClass = {};
 mapCodeToClass[AuthCodeTypes.EMAIL] = EmailTwoFactorAuthenticationService;
@@ -15,16 +13,12 @@ mapCodeToClass[AuthCodeTypes.TOTP] = TotpTwoFactorAuthService;
 @Injectable()
 export class TwoFactorAuthService {
   constructor(
-    @InjectRepository(AuthTypeUser)
-    private readonly authTypeUserRepo: Repository<AuthTypeUser>,
     private readonly moduleRef: ModuleRef,
+    private readonly userAuthsService: UserAuthsService,
   ) {}
 
   getAvalilableAuths(userId: number) {
-    return this.authTypeUserRepo.find({
-      relations: ['authTypeId'],
-      where: { userId },
-    });
+    return this.userAuthsService.getAllByUser(userId);
   }
 
   async generate(userId: number, authType: AuthCodeTypes) {

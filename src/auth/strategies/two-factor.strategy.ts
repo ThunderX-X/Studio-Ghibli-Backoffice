@@ -4,17 +4,15 @@ import { Strategy } from 'passport-local';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../services/auth.service';
 import { TwoFactorAuthService } from '../../multi-factor-auth/services/two-factor-auth.service';
-import { AuthCodeTypes } from 'src/multi-factor-auth/enums/auth-codes.enum';
-import { UsersService } from 'src/users/services/users.service';
+import { AuthCodeTypes } from '../../multi-factor-auth/enums/auth-codes.enum';
 import { Request } from 'express';
-
+import { Payload } from '../models/payload.model';
 @Injectable()
 export class TwoFactorStrategy extends PassportStrategy(Strategy, 'TwoFactor') {
   constructor(
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly twoFactorService: TwoFactorAuthService,
-    private readonly usersService: UsersService,
   ) {
     super({ passReqToCallback: true });
   }
@@ -31,7 +29,7 @@ export class TwoFactorStrategy extends PassportStrategy(Strategy, 'TwoFactor') {
     );
     if (!isValid) throw new BadRequestException(data);
 
-    const newPayload = {
+    const newPayload: Payload = {
       sub: userId,
       twoFactor: twoFactor,
       twoFactorAuth: isValid,

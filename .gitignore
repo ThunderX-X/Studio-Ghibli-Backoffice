@@ -32,3 +32,6 @@ lerna-debug.log*
 
 # IDE - VSCode
 .vscode/*
+
+#Data folders
+*_data/

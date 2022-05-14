@@ -1,6 +1,12 @@
 import * as crypto from 'crypto';
-
+//import { argon2i } from 'argon2-ffi';
+import * as argon2 from 'argon2';
 export class CryptoService {
+  private static ARGON_MEMORY_KIB = 15360;
+  private static ARGON_HASH_LENGTH = 128;
+  private static ARGON_VARIANT = argon2.argon2id;
+  private static ARGON_ITERATIONS = 3;
+
   static generateRandomNumber(lenght: number) {
     try {
       const numbers = new Array(lenght).map(() => Math.random() * 10);
@@ -59,6 +65,33 @@ export class CryptoService {
       .toString('hex');
 
     return hash;
+  }
+
+  static async hashPassword(password: string) {
+    try {
+      const hashedPassword = await argon2.hash(password, {
+        type: this.ARGON_VARIANT,
+        memoryCost: this.ARGON_MEMORY_KIB,
+        hashLength: this.ARGON_HASH_LENGTH,
+        timeCost: this.ARGON_ITERATIONS,
+      });
+      return hashedPassword;
+    } catch (error) {
+      throw new Error(`Can't hash password`);
+    }
+  }
+
+  static async verifyPassword(password: string, hashedPassword: string) {
+    try {
+      return await argon2.verify(hashedPassword, password, {
+        type: this.ARGON_VARIANT,
+        memoryCost: this.ARGON_MEMORY_KIB,
+        hashLength: this.ARGON_HASH_LENGTH,
+        timeCost: this.ARGON_ITERATIONS,
+      });
+    } catch (error) {
+      throw new Error(`Can't verify the password`);
+    }
   }
 
   private static getCipherAlgorithm() {

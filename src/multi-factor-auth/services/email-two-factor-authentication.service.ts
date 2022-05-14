@@ -1,7 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { AuthCodesService } from './auth-codes.service';
 import {
   GenerationStatus,
@@ -21,8 +19,6 @@ export class EmailTwoFactorAuthenticationService
   implements TwoFactorAuthentication
 {
   constructor(
-    @InjectRepository(MultiFactorAuthCode)
-    private readonly authCodesRepo: Repository<MultiFactorAuthCode>,
     private readonly authCodeService: AuthCodesService,
     private readonly emailService: EmailService,
     private readonly userService: UsersService,
@@ -102,22 +98,17 @@ export class EmailTwoFactorAuthenticationService
 
   private async saveUserCode(userId: number, code: string) {
     try {
-      const userCode = this.authCodesRepo.create({
+      await this.authCodeService.create({
         code,
         codeType: AuthCodeTypes.EMAIL,
         userId,
       });
-      await this.authCodesRepo.save(userCode);
     } catch (Exception) {
       throw new Error(`Can't generate login code to user`);
     }
   }
 
   private async deleteUserCode(userId: number, code: string) {
-    return await this.authCodesRepo.delete({
-      code,
-      userId,
-      codeType: AuthCodeTypes.EMAIL,
-    });
+    return await this.authCodeService.delete(code, userId, AuthCodeTypes.EMAIL);
   }
 }

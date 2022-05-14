@@ -35,7 +35,7 @@ export class User {
   password: string;
 
   @Column({ name: 'role_id', type: 'int', nullable: false })
-  roleId: string;
+  roleId: number;
 
   @Column({
     name: 'created_at',

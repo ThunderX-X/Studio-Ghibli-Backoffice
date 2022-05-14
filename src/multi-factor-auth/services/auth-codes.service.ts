@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import CrudService from 'src/common/crud-service';
-import { FindConditions } from 'typeorm';
+import { DeepPartial, FindConditions } from 'typeorm';
 import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 
@@ -29,5 +29,17 @@ export class AuthCodesService extends CrudService<MultiFactorAuthCode> {
     const codes = await super.getAll({ codeType, userId });
     if (codes.length > 1) throw new Error('More than one code found');
     return codes[0];
+  }
+
+  async create(authCode: DeepPartial<MultiFactorAuthCode>) {
+    return super.make(authCode);
+  }
+
+  async delete(code: string, userId: number, codeType: AuthCodeTypes) {
+    return super.remove({
+      code,
+      userId,
+      codeType,
+    });
   }
 }

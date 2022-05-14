@@ -1,8 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from 'src/common/crypto.service';
-import { Repository } from 'typeorm';
-import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 import {
   GenerationStatus,
@@ -19,8 +16,6 @@ import { UserAuthsService } from './user-auths.service';
 @Injectable()
 export class TotpTwoFactorAuthService implements TwoFactorAuthentication {
   constructor(
-    @InjectRepository(MultiFactorAuthCode)
-    private readonly authCodesRepo: Repository<MultiFactorAuthCode>,
     @Inject(config.KEY)
     private readonly configService: ConfigType<typeof config>,
     private readonly authCodesService: AuthCodesService,
@@ -92,12 +87,11 @@ export class TotpTwoFactorAuthService implements TwoFactorAuthentication {
   private async generateKey(userId: number) {
     const key = CryptoService.generateRandomString(32);
     const { encryptedValue, initializationVector } = CryptoService.encrypt(key);
-    const userCode = this.authCodesRepo.create({
+    await this.authCodesService.create({
       code: `${encryptedValue}#${initializationVector}`,
       codeType: AuthCodeTypes.TOTP,
       userId,
     });
-    await this.authCodesRepo.save(userCode);
     return key;
   }
 

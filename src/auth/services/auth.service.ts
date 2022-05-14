@@ -5,6 +5,7 @@ import { TwoFactorAuthService } from 'src/multi-factor-auth/services/two-factor-
 import { UsersService } from 'src/users/services/users.service';
 import { Request } from 'express';
 import { Payload } from '../models/payload.model';
+import { CryptoService } from 'src/common/crypto.service';
 
 @Injectable()
 export class AuthService {
@@ -14,8 +15,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  validateUserAndPassword(email: string, password: string) {
-    const user = this.usersService.findByEmail(email);
+  async validateUserAndPassword(email: string, password: string) {
+    const user = await this.usersService.findByEmail(email);
+    const hashedPassword = user.password;
+    const match = await CryptoService.verifyPassword(password, hashedPassword);
+    if (!match) return null;
     return user;
   }
 
