@@ -22,15 +22,19 @@ export class TotpTwoFactorAuthService implements TwoFactorAuthentication {
     private readonly userAuths: UserAuthsService,
   ) {}
 
-  async generate(userId: number): Promise<GenerationStatus> {
+  async generate(
+    userId: number,
+    generateUri = false,
+  ): Promise<GenerationStatus> {
     try {
       await this.validateEnabled(userId);
       let key = await this.getKey(userId);
       if (!key) {
         key = await this.generateKey(userId);
+        generateUri = true;
       }
-
-      return { generated: true, data: this.generateTotpURI(key) };
+      const toptUri = generateUri ? this.generateTotpURI(key) : null;
+      return { generated: true, data: toptUri };
     } catch (error) {
       return { generated: false, data: error.message };
     }
