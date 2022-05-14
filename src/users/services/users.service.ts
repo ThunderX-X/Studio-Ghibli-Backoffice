@@ -9,11 +9,11 @@ export class UsersService extends CrudService<User> {
   }
 
   async findOne(userId: number) {
-    return await super.findOneById(userId);
+    return await super.getOneById(userId);
   }
 
   async findByEmail(email: string) {
-    const user = await super.findAll({ email });
+    const user = await super.getAll({ email });
     return user[0];
   }
 }

@@ -1,31 +1,35 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from 'src/common/crypto.service';
 import { Repository } from 'typeorm';
 import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 import {
-  GenerateOperationStatus,
+  GenerationStatus,
   TwoFactorAuthentication,
+  ValidationStatus,
 } from '../interfaces/TwoFactorAuthentication';
 import { AuthCodesService } from './auth-codes.service';
 import * as base32 from 'hi-base32';
 import config from '../../config';
 import { ConfigType } from '@nestjs/config';
 import * as hotp from 'hotp';
+import { UserAuthsService } from './user-auths.service';
 
 @Injectable()
 export class TotpTwoFactorAuthService implements TwoFactorAuthentication {
   constructor(
     @InjectRepository(MultiFactorAuthCode)
     private readonly authCodesRepo: Repository<MultiFactorAuthCode>,
-    private readonly authCodesService: AuthCodesService,
     @Inject(config.KEY)
     private readonly configService: ConfigType<typeof config>,
+    private readonly authCodesService: AuthCodesService,
+    private readonly userAuths: UserAuthsService,
   ) {}
 
-  async generate(userId: number): Promise<GenerateOperationStatus> {
+  async generate(userId: number): Promise<GenerationStatus> {
     try {
+      await this.validateEnabled(userId);
       let key = await this.getKey(userId);
       if (!key) {
         key = await this.generateKey(userId);
@@ -33,15 +37,38 @@ export class TotpTwoFactorAuthService implements TwoFactorAuthentication {
 
       return { generated: true, data: this.generateTotpURI(key) };
     } catch (error) {
-      return { generated: false, data: error };
+      return { generated: false, data: error.message };
     }
   }
 
-  async validate(userId: number, code: string): Promise<boolean> {
-    const key = await this.getKey(userId);
-    const actualCounter = this.getActualCounter();
-    const actualCode = hotp(key, actualCounter);
-    return actualCode == code;
+  async validate(userId: number, code: string): Promise<ValidationStatus> {
+    try {
+      await this.validateEnabled(userId);
+      const key = await this.getKey(userId);
+      const actualCounter = this.getActualCounter();
+      const actualCode = hotp(key, actualCounter);
+      return { isValid: this.isValid(code, actualCode), data: null };
+    } catch (error) {
+      return { isValid: false, data: error.message };
+    }
+  }
+
+  private isValid(code, actualCode) {
+    if (actualCode != code) throw new BadRequestException('Invalid code');
+    return true;
+  }
+
+  private async validateEnabled(userId: number) {
+    const enabled = await this.isEnabled(userId);
+    if (!enabled) throw new Error('The TOTP 2FA is not enabled');
+  }
+
+  async isEnabled(userId: number): Promise<boolean> {
+    const enabledAuthsFound = await this.userAuths.getByTypeAndUser(
+      userId,
+      AuthCodeTypes.TOTP,
+    );
+    return enabledAuthsFound.length > 0;
   }
 
   private getActualCounter(delaySeconds = 1) {

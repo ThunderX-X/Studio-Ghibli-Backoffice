@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { JwtService } from '@nestjs/jwt';
@@ -20,16 +20,16 @@ export class TwoFactorStrategy extends PassportStrategy(Strategy, 'TwoFactor') {
   }
 
   async validate(request: Request, authType: AuthCodeTypes, code: string) {
-    const access_token = request.headers.authorization;
-    const payload: any = this.jwtService.decode(access_token);
+    const payload = this.authService.getUserPayload(request);
     const userId = payload.sub;
     const twoFactor = payload.twoFactor;
-    const isValid = await this.twoFactorService.validate(
+    code += '';
+    const { isValid, data } = await this.twoFactorService.validate(
       userId,
       code,
       authType,
     );
-    if (!isValid) throw new UnauthorizedException('Invalid login');
+    if (!isValid) throw new BadRequestException(data);
 
     const newPayload = {
       sub: userId,

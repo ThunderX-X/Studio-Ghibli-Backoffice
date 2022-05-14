@@ -19,14 +19,14 @@ export class AuthCodesService extends CrudService<MultiFactorAuthCode> {
       codeType: codeType,
       userId: userId,
     };
-    return super.findOneById(code, where);
+    return super.getOneById(code, where);
   }
 
   async findOneCode(
     codeType: AuthCodeTypes,
     userId: number,
   ): Promise<MultiFactorAuthCode> {
-    const codes = await super.findAll({ codeType, userId });
+    const codes = await super.getAll({ codeType, userId });
     if (codes.length > 1) throw new Error('More than one code found');
     return codes[0];
   }

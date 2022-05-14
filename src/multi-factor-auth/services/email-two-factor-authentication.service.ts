@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthCodesService } from './auth-codes.service';
 import {
-  GenerateOperationStatus,
+  GenerationStatus,
+  ValidationStatus,
   TwoFactorAuthentication,
 } from '../interfaces/TwoFactorAuthentication';
 import { EmailService } from '../../common/email.service';
 import { UsersService } from '../../users/services/users.service';
 import { CryptoService } from '../../common/crypto.service';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
+import { UserAuthsService } from './user-auths.service';
 
 const LOGIN_CODE_SIZE = 10;
 
@@ -24,31 +26,51 @@ export class EmailTwoFactorAuthenticationService
     private readonly authCodeService: AuthCodesService,
     private readonly emailService: EmailService,
     private readonly userService: UsersService,
+    private readonly userAuths: UserAuthsService,
   ) {}
 
-  async validate(userId: number, code: string): Promise<boolean> {
-    const hashedCode = CryptoService.getHash(code);
-    const userCode = await this.getUserCode(userId, hashedCode);
-    if (userCode) {
-      await this.deleteUserCode(userId, hashedCode);
+  async validate(userId: number, code: string): Promise<ValidationStatus> {
+    try {
+      await this.validateEnabled(userId);
+      const hashedCode = CryptoService.getHash(code);
+      const userCode = await this.getUserCode(userId, hashedCode);
+      if (userCode) {
+        await this.deleteUserCode(userId, hashedCode);
+      }
+      return { isValid: await this.isValid(userCode), data: null };
+    } catch (error) {
+      return { isValid: false, data: error.message };
     }
-    return this.isValid(userCode);
   }
 
-  async generate(userId: number): Promise<GenerateOperationStatus> {
+  async generate(userId: number): Promise<GenerationStatus> {
     try {
+      await this.validateEnabled(userId);
       const loginCode = CryptoService.generateRandomString(LOGIN_CODE_SIZE);
       const hashedCode = CryptoService.getHash(loginCode);
       await this.saveUserCode(userId, hashedCode);
       await this.sendEmailToUser(userId, loginCode);
       return { generated: true, data: null };
     } catch (error) {
-      return { generated: false, data: error };
+      return { generated: false, data: error.message };
     }
   }
 
+  private async validateEnabled(userId: number) {
+    const enabled = await this.isEnabled(userId);
+    if (!enabled) throw new Error('The Email 2FA is not enabled');
+  }
+
+  async isEnabled(userId: number): Promise<boolean> {
+    const enabledAuthsFound = await this.userAuths.getByTypeAndUser(
+      userId,
+      AuthCodeTypes.EMAIL,
+    );
+    return enabledAuthsFound.length > 0;
+  }
+
   private async isValid(userCode: MultiFactorAuthCode) {
-    if (!userCode) return false;
+    if (!userCode) throw new BadRequestException('Invalid code');
 
     const creationTime = new Date(userCode.createdAt.getTime());
     const limitTime = new Date(creationTime.getTime());

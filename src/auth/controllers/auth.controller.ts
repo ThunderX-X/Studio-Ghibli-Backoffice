@@ -4,17 +4,31 @@ import { AuthCodeTypes } from 'src/multi-factor-auth/enums/auth-codes.enum';
 import { TwoFactorAuthService } from 'src/multi-factor-auth/services/two-factor-auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalGuard } from '../guards/local.guard';
+import { AuthService } from '../services/auth.service';
+import { TwoFactorGuard } from '../guards/two-factor.guard';
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly twoFactorAuthService: TwoFactorAuthService) {}
-  @Get('generate')
-  generate() {
-    return this.twoFactorAuthService.generate(1, AuthCodeTypes.TOTP);
+  constructor(
+    private readonly twoFactorAuthService: TwoFactorAuthService,
+    private readonly authService: AuthService,
+  ) {}
+
+  @UseGuards(LocalGuard)
+  @Get('generate/:codeType')
+  generate(@Param('codeType') codeType: AuthCodeTypes, request: Request) {
+    const userId = this.authService.getUserId(request);
+    return this.twoFactorAuthService.generate(userId, AuthCodeTypes.TOTP);
   }
 
-  @Get('validate/:code')
-  validate(@Param('code') code: string) {
-    return this.twoFactorAuthService.validate(1, code, AuthCodeTypes.TOTP);
+  @UseGuards(LocalGuard)
+  @Get('validate/:codeType/:code')
+  validate(
+    @Param('code') code: string,
+    @Param('codeType') codeType: AuthCodeTypes,
+    request: Request,
+  ) {
+    const userId = this.authService.getUserId(request);
+    return this.twoFactorAuthService.validate(userId, code, codeType);
   }
 
   @UseGuards(AuthGuard('Local'))
@@ -27,5 +41,11 @@ export class AuthController {
   @Post('twoFactorLogin')
   twoFactorLogin(@Req() req: Request) {
     return req.user;
+  }
+
+  @UseGuards(TwoFactorGuard)
+  @Get('prueba')
+  prueba() {
+    return 'hey!';
   }
 }

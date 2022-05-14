@@ -34,6 +34,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.0.3",
     "@types/passport-jwt": "^3.0.6",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "hi-base32": "^0.5.1",
     "hotp": "^3.0.0",

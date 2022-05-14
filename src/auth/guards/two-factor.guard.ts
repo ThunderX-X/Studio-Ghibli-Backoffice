@@ -7,23 +7,22 @@ import {
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../services/auth.service';
+
 @Injectable()
 export class TwoFactorGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    const access_token = request.headers.authorization;
-    const payload: any = this.jwtService.decode(access_token);
-    this.hasPayload(payload);
+    const payload = this.authService.getUserPayload(request);
     this.twoFactorEnabled(payload);
     return true;
-  }
-
-  private hasPayload(payload) {
-    if (!payload) throw new ForbiddenException('Not authenticated');
   }
 
   private twoFactorEnabled(payload) {

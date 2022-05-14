@@ -6,6 +6,7 @@ import { EmailService } from '../common/email.service';
 import { UsersService } from '../users/services/users.service';
 import { TwoFactorAuthService } from './services/two-factor-auth.service';
 import { TotpTwoFactorAuthService } from './services/totp-two-factor-auth.service';
+import { UserAuthsService } from './services/user-auths.service';
 @Module({
   imports: [TypeOrmModule],
   providers: [
@@ -15,6 +16,7 @@ import { TotpTwoFactorAuthService } from './services/totp-two-factor-auth.servic
     UsersService,
     TwoFactorAuthService,
     TotpTwoFactorAuthService,
+    UserAuthsService,
   ],
   exports: [
     TypeOrmModule,

@@ -1,14 +1,15 @@
 import { FindConditions, getRepository, Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import 'reflect-metadata';
+import { DeepPartial } from 'typeorm/common/DeepPartial';
 
 type ObjectType<T> = { new (): T };
 
-export default abstract class CrudService<EntityClass> {
-  private _repository: Repository<EntityClass>;
-  private type: ObjectType<EntityClass>;
+export default abstract class CrudService<Entity> {
+  private _repository: Repository<Entity>;
+  private type: ObjectType<Entity>;
 
-  constructor(type: ObjectType<EntityClass>) {
+  constructor(type: ObjectType<Entity>) {
     this.type = type;
   }
   get repository() {
@@ -18,21 +19,21 @@ export default abstract class CrudService<EntityClass> {
     return this._repository;
   }
 
-  protected async findAll(
-    filters: FindConditions<EntityClass> = {},
+  protected async getAll(
+    filters: FindConditions<Entity> = {},
     relations: string[] = [],
-  ): Promise<EntityClass[]> {
+  ): Promise<Entity[]> {
     return await this.repository.find({
       relations,
       where: filters,
     });
   }
 
-  protected async findOneById(
+  protected async getOneById(
     id: any,
-    filters: FindConditions<EntityClass> = {},
+    filters: FindConditions<Entity> = {},
     relations: string[] = [],
-  ): Promise<EntityClass> {
+  ): Promise<Entity> {
     const entity = this.repository.findOneOrFail(id, {
       relations,
       where: filters,
@@ -44,13 +45,22 @@ export default abstract class CrudService<EntityClass> {
     return entity;
   }
 
-  protected async modify(id: any, changes: any) {
-    const entityToUpdate: EntityClass = await this.findOneById(id);
+  protected async modify(id: any, changes: DeepPartial<Entity>) {
+    const entityToUpdate: Entity = await this.getOneById(id);
     this.repository.merge(entityToUpdate, changes);
     return await this.repository.save(entityToUpdate as any);
   }
 
   protected async remove(id: any) {
     return this.repository.delete(id);
+  }
+
+  protected async removeByConditions(deleteConditions: FindConditions<Entity>) {
+    return this.repository.delete(deleteConditions);
+  }
+
+  protected async make(entity: DeepPartial<Entity>) {
+    const newEntity = await this.repository.create(entity);
+    return await this.repository.save(newEntity as DeepPartial<Entity>);
   }
 }
