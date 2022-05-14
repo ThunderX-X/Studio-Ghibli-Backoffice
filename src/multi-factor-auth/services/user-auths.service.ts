@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import CrudService from 'src/common/crud-service';
-import { AuthTypeUser } from 'src/database/entities/auth-types-user.entity';
+import CrudService from '../../common/crud-service';
+import { AuthTypeUser } from '../../database/entities/auth-types-user.entity';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 
 @Injectable()

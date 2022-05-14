@@ -1,11 +1,11 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthCodeTypes } from 'src/multi-factor-auth/enums/auth-codes.enum';
-import { TwoFactorAuthService } from 'src/multi-factor-auth/services/two-factor-auth.service';
-import { UsersService } from 'src/users/services/users.service';
+import { AuthCodeTypes } from '../../multi-factor-auth/enums/auth-codes.enum';
+import { TwoFactorAuthService } from '../../multi-factor-auth/services/two-factor-auth.service';
+import { UsersService } from '../../users/services/users.service';
 import { Request } from 'express';
 import { Payload } from '../models/payload.model';
-import { CryptoService } from 'src/common/crypto.service';
+import { CryptoService } from '../../common/crypto.service';
 
 @Injectable()
 export class AuthService {

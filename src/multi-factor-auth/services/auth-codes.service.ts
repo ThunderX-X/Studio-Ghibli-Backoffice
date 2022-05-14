@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import CrudService from 'src/common/crud-service';
+import CrudService from '../../common/crud-service';
 import { DeepPartial, FindConditions } from 'typeorm';
 import { MultiFactorAuthCode } from '../../database/entities/multi-factor-auth-codes.entity';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';

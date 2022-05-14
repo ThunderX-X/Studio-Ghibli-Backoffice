@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from '../users/services/users.service';
 import { MultiFactorAuthModule } from '../multi-factor-auth/multi-factor-auth.module';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';

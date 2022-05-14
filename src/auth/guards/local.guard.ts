@@ -6,18 +6,16 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { UsersService } from 'src/users/services/users.service';
-import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../services/auth.service';
 @Injectable()
 export class LocalGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(private readonly authService: AuthService) {}
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    const access_token = request.headers.authorization;
-    const payload: any = this.jwtService.decode(access_token);
+    const payload = this.authService.getUserPayload(request);
     if (!payload) throw new ForbiddenException('Not authenticated');
     return true;
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import CrudService from 'src/common/crud-service';
-import { CryptoService } from 'src/common/crypto.service';
+import CrudService from '../../common/crud-service';
+import { CryptoService } from '../../common/crypto.service';
 import { User } from '../../database/entities/user.entity';
 import { CreateUser, UpdateUser } from '../dtos/user.dto';
 @Injectable()

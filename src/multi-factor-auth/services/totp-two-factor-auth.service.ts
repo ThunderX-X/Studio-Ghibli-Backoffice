@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CryptoService } from 'src/common/crypto.service';
+import { CryptoService } from '../../common/crypto.service';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 import {
   GenerationStatus,

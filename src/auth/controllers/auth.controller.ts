@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-import { AuthCodeTypes } from 'src/multi-factor-auth/enums/auth-codes.enum';
-import { TwoFactorAuthService } from 'src/multi-factor-auth/services/two-factor-auth.service';
+import { AuthCodeTypes } from '../../multi-factor-auth/enums/auth-codes.enum';
+import { TwoFactorAuthService } from '../../multi-factor-auth/services/two-factor-auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalGuard } from '../guards/local.guard';
 import { AuthService } from '../services/auth.service';
