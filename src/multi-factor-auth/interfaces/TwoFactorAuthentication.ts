@@ -1,12 +1,20 @@
-export type GenerationStatus = {
-  generated: boolean;
-  data: any;
-};
+import { ApiProperty } from '@nestjs/swagger';
 
-export type ValidationStatus = {
-  isValid: boolean;
+export class GenerationStatus {
+  @ApiProperty()
+  generated: boolean;
+
+  @ApiProperty()
   data: any;
-};
+}
+
+export class ValidationStatus {
+  @ApiProperty()
+  isValid: boolean;
+
+  @ApiProperty()
+  data: any;
+}
 export interface TwoFactorAuthentication {
   generate(userId: number): Promise<GenerationStatus>;
   validate(userId: number, code: string): Promise<ValidationStatus>;

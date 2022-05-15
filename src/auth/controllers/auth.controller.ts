@@ -17,15 +17,20 @@ import { LocalGuard } from '../guards/local.guard';
 import { AuthService } from '../services/auth.service';
 
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { Login } from '../models/login.model';
 import { TwoFactorLogin } from '../models/two-factor-login.model';
-
+import { ErrorResponse } from 'src/common/error-response.model';
+import { LoguedModel } from '../models/logued.model';
+import { GenerationStatus } from '../../multi-factor-auth/interfaces/TwoFactorAuthentication';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -38,6 +43,13 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: Login })
+  @ApiOkResponse({
+    type: LoguedModel,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    type: ErrorResponse,
+  })
   @ApiOperation({
     summary: `This endpoint enables simple authentication`,
     description: `This endpoint enables simple authentication, if two factor authentication is enabled the provided token is only valid for the endpoints: 
@@ -52,7 +64,19 @@ export class AuthController {
 
   @UseGuards(LocalGuard)
   @Get('generate/:codeType')
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
+  @ApiOkResponse({
+    type: GenerationStatus,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    type: ErrorResponse,
+  })
+  @ApiForbiddenResponse({
+    description: 'Not authenticated',
+    type: ErrorResponse,
+  })
   @ApiOperation({
     summary: `Generates two-factor code`,
     description: `Generates two-factor code if is required by the two-factor authentication type`,
@@ -75,6 +99,17 @@ export class AuthController {
   @UseGuards(LocalGuard, AuthGuard('TwoFactor'))
   @Post('twoFactorLogin')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: LoguedModel,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    type: ErrorResponse,
+  })
+  @ApiForbiddenResponse({
+    description: 'Not authenticated',
+    type: ErrorResponse,
+  })
   @ApiBody({ type: TwoFactorLogin })
   @ApiBearerAuth()
   @ApiOperation({
