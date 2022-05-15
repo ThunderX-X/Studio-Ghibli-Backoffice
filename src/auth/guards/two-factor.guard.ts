@@ -6,15 +6,11 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class TwoFactorGuard implements CanActivate {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   canActivate(
     context: ExecutionContext,

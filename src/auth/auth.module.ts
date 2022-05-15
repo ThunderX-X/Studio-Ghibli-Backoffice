@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module, ParseEnumPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from '../users/services/users.service';
 import { MultiFactorAuthModule } from '../multi-factor-auth/multi-factor-auth.module';
@@ -9,6 +9,8 @@ import { JwtModule } from '@nestjs/jwt';
 import config from '../config';
 import { ConfigType } from '@nestjs/config';
 import { TwoFactorStrategy } from './strategies/two-factor.strategy';
+
+@Global()
 @Module({
   imports: [
     TypeOrmModule,
@@ -27,5 +29,6 @@ import { TwoFactorStrategy } from './strategies/two-factor.strategy';
   ],
   controllers: [AuthController],
   providers: [UsersService, AuthService, LocalStrategy, TwoFactorStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

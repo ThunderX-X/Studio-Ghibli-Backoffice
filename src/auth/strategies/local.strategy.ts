@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'Local') {
     @Inject(config.KEY)
     private readonly configService: ConfigType<typeof config>,
   ) {
-    super();
+    super({ usernameField: 'email' });
   }
 
   async validate(email: string, password: string) {

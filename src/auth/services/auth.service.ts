@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   getUserPayload(request: Request): Payload {
-    const token = request.headers.authorization;
+    const token = request.headers.authorization?.replace('Bearer', '').trim();
     const payload = this.jwtService.decode(token) as Payload;
     this.hasPayload(payload);
     return payload;
