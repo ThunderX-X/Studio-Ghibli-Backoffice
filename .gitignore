@@ -35,3 +35,6 @@ lerna-debug.log*
 
 #Data folders
 *_data/
+
+#Override docker-compose file
+*override.yml
