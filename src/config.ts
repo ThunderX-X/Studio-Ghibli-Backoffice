@@ -12,6 +12,14 @@ export default registerAs('config', () => {
       host: process.env.TYPEORM_HOST,
       type: process.env.TYPEORM_CONNECTION,
     },
+    database_postgres: {
+      dbName: process.env.HEROKU_DATABASE,
+      port: parseInt(process.env.HEROKU_PORT, 10),
+      password: process.env.HEROKU_PASSWORD,
+      username: process.env.HEROKU_USERNAME,
+      host: process.env.HEROKU_HOST,
+      type: process.env.HEROKU_CONNECTION,
+    },
     email: {
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT, 10),
