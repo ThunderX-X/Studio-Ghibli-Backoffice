@@ -6,25 +6,40 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'movies' })
 export class Movie {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'varchar', length: 255, unique: true })
-  name: string;
+  title: string;
+
+  @Column({ type: 'varchar' })
+  original_title: string;
+
+  @Column({ type: 'int' })
+  release_year: number;
+
+  @Column({ type: 'varchar' })
+  wiki_link: string;
+
+  @Column({ type: 'varchar' })
+  music: string;
+
+  @Column({ type: 'int' })
+  duration: string;
+
+  @Column({ type: 'varchar' })
+  cover: string;
+
+  @Column({ type: 'varchar' })
+  banner: string;
 
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'int' })
-  price: number;
-
-  @Column({ type: 'int' })
-  stock: number;
-
   @Column({ type: 'varchar' })
-  image: string;
+  trailer: string;
 
   @CreateDateColumn({
     type: 'timestamptz',

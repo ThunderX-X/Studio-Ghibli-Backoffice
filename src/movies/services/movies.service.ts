@@ -7,7 +7,10 @@ import { CreateMovieDto, UpdateMovieDto } from './../dtos/movies.dtos';
 
 @Injectable()
 export class MoviesService {
-  constructor(@InjectRepository(Movie) private movieRepo: Repository<Movie>) {}
+  constructor(
+    @InjectRepository(Movie, 'databaseHeroku')
+    private movieRepo: Repository<Movie>,
+  ) {}
 
   findAll() {
     return this.movieRepo.find();

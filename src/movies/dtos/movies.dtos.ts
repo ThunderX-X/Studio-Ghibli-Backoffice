@@ -11,29 +11,53 @@ export class CreateMovieDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  readonly name: string;
+  readonly title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly original_title: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @IsPositive()
+  @ApiProperty()
+  readonly release_year: number;
+
+  @IsUrl()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly wiki_link: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly music: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly duration: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly cover: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly banner: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   readonly description: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  @IsPositive()
-  @ApiProperty()
-  readonly price: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @IsPositive()
-  @ApiProperty()
-  readonly stock: number;
-
-  @IsUrl()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  readonly image: string;
+  readonly trailer: string;
 }
 
 export class UpdateMovieDto extends PartialType(CreateMovieDto) {}
