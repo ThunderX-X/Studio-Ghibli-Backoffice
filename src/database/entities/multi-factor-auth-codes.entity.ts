@@ -1,19 +1,26 @@
 import { User } from '../../database/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryColumn, Unique } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { AuthType } from './auth-types.entity';
 
 @Entity({ name: 'multi_factor_auth_codes' })
 export class MultiFactorAuthCode {
-  @PrimaryColumn({ type: 'varchar', length: 100 })
+  @PrimaryColumn({ type: 'varchar', length: 400 })
   code: string;
 
-  @Column({ name: 'code_type', type: 'int', nullable: false })
-  @ManyToOne(() => AuthType, (codeType) => codeType.id)
-  codeType;
+  @ManyToOne(() => AuthType, (codeType) => codeType.id, { nullable: false })
+  @JoinColumn({ name: 'code_type' })
+  codeType: number;
 
-  @Column({ name: 'user_id', type: 'int', nullable: false })
-  @ManyToOne(() => User, (user) => user.id)
-  userId;
+  @ManyToOne(() => User, (user) => user.id, { nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  userId: number;
 
   @Column({
     name: 'duration_seconds',
@@ -23,11 +30,11 @@ export class MultiFactorAuthCode {
   })
   secondsDuration: number;
 
-  @Column({
+  @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',
     nullable: false,
-    default: 'now()',
+    default: () => 'now()',
   })
   createdAt: Date;
 }

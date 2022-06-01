@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Movie } from 'src/movies/entities/movie.entity';
@@ -7,24 +7,44 @@ import config from '../config';
 import { AuthTypeUser } from './entities/auth-types-user.entity';
 import { AuthType } from './entities/auth-types.entity';
 import { MultiFactorAuthCode } from './entities/multi-factor-auth-codes.entity';
+import { RolePermission } from './entities/role-permissions.entity';
+import { Role } from './entities/roles.entity';
 import { User } from './entities/user.entity';
+import { Module as ModuleDb } from './entities/modules.entity';
+import { Permission } from './entities/permissions.entity';
 
+const backofficeEntities = [
+  AuthTypeUser,
+  AuthType,
+  MultiFactorAuthCode,
+  User,
+  Role,
+  RolePermission,
+  ModuleDb,
+  Permission,
+];
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      inject: [ConfigService, config.KEY],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        database: configService.get<string>('BACKOFFICE_DATABASE'),
-        port: configService.get<number>('BACKOFFICE_PORT'),
-        password: configService.get<string>('BACKOFFICE_PASSWORD'),
-        username: configService.get<string>('BACKOFFICE_USERNAME'),
-        host: configService.get<string>('BACKOFFICE_HOST'),
-        synchronize: false,
-        entities: [User, AuthType, AuthTypeUser, MultiFactorAuthCode],
-      }),
+      inject: [config.KEY],
+      useFactory: (configService: ConfigType<typeof config>) => {
+        const { dbName, port, password, username, host, type } =
+          configService.database;
+        return {
+          type: type as any,
+          host,
+          port,
+          username,
+          password,
+          database: dbName,
+          synchronize: false,
+          autoLoadEntities: true,
+          entities: backofficeEntities,
+        };
+      },
     }),
+    TypeOrmModule.forFeature(backofficeEntities),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -35,7 +55,7 @@ import { User } from './entities/user.entity';
         username: configService.get<string>('HEROKU_USERNAME'),
         host: configService.get<string>('HEROKU_HOST'),
         synchronize: false,
-        logging: true,
+        logging: false,
         entities: [Movie],
         name: 'databaseHeroku',
         ssl: {

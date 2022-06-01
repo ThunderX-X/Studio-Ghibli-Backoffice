@@ -6,6 +6,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -14,17 +15,23 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { TwoFactorGuard } from 'src/auth/guards/two-factor.guard';
+import { AplicationModule } from 'src/auth/decorators/app-module.decorator';
+import { RequiredPermissions } from 'src/auth/decorators/required-permissions.decorator';
+import { ModulesEnum } from 'src/auth/enums/modules.enum';
+import { PermissionTypes } from 'src/auth/enums/permissionsType.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ErrorResponse } from 'src/common/error-response.model';
 import { CreateUser } from '../dtos/user.dto';
 import { UsersService } from '../services/users.service';
 
 @ApiTags('users')
 @Controller('users')
+@AplicationModule(ModulesEnum.USERS)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(TwoFactorGuard)
+  @UseGuards(AuthGuard('Logued'), RolesGuard)
+  @RequiredPermissions(PermissionTypes.CREATE)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()

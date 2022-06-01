@@ -2,7 +2,7 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { Transporter } from 'nodemailer';
 import config from '../config';
-const nodemailer = require('nodemailer');
+import * as nodemailer from 'nodemailer';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class EmailService {

@@ -19,7 +19,6 @@ import { UserAuthsService } from './services/user-auths.service';
     UserAuthsService,
   ],
   exports: [
-    TypeOrmModule,
     EmailTwoFactorAuthenticationService,
     AuthCodesService,
     EmailService,

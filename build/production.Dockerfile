@@ -4,7 +4,7 @@ FROM node:17.9 as builder
 
 RUN mkdir -p /usr/app
 
-COPY ["package.json", "package.json", "/usr/app"]
+COPY ["package.json", "package.json", "build/app-start.sh", "/usr/app"]
 
 WORKDIR /usr/app
 
@@ -23,7 +23,7 @@ FROM node:17.9
 
 RUN mkdir -p /usr/app
 
-COPY ["package.json", "package.json", "/usr/app"]
+COPY ["package.json", "package.json", "build/app-start.sh", "/usr/app"]
 
 WORKDIR /usr/app
 
@@ -33,4 +33,4 @@ COPY --from=builder ["/usr/app/dist", "/usr/app"]
 
 EXPOSE 3000
 
-CMD ["node", "main.js"]
+CMD ["/bin/bash", "app-start.sh"]

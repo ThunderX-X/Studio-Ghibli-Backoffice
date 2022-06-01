@@ -1,5 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { IsEmail } from 'class-validator';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Role } from './roles.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -12,7 +20,6 @@ export class User {
   @Column({ name: 'last_name', type: 'varchar', length: 50, nullable: false })
   lastName: string;
 
-  @IsEmail()
   @Column({ name: 'email', type: 'varchar', length: 75, nullable: false })
   email: string;
 
@@ -31,25 +38,26 @@ export class User {
   })
   profilePicture: string;
 
-  @Column({ name: 'password', type: 'varchar', length: 256, nullable: false })
+  @Column({ name: 'password', type: 'varchar', length: 512, nullable: false })
   password: string;
 
-  @Column({ name: 'role_id', type: 'int', nullable: false })
-  roleId: number;
+  @ManyToOne(() => Role, (role) => role.id, { nullable: false })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 
-  @Column({
+  @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',
     nullable: false,
-    default: 'now()',
+    default: () => 'now()',
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamptz',
     nullable: false,
-    default: 'now()',
+    default: () => 'now()',
   })
   updatedAt: Date;
 }

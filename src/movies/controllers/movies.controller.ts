@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Query,
   Param,
   Post,
   Body,
@@ -30,7 +29,7 @@ export class MoviesController {
   @Get(':id')
   @ApiOperation({ summary: 'Consult one movie for ID' })
   @HttpCode(HttpStatus.ACCEPTED)
-  getProduct(@Param('productId', ParseIntPipe) id: number) {
+  getProduct(@Param('id', ParseIntPipe) id: number) {
     return this.moviesService.findOne(id);
   }
 

@@ -1,5 +1,12 @@
 import { User } from '../../database/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { AuthType } from './auth-types.entity';
 
 @Entity({ name: 'auth_types_user' })
@@ -7,27 +14,27 @@ export class AuthTypeUser {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'user_id', type: 'int', nullable: false })
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id, { nullable: false })
+  @JoinColumn({ name: 'user_id' })
   userId: number;
 
-  @Column({ name: 'auth_type_id', type: 'int', nullable: false })
-  @ManyToOne(() => AuthType, (authType) => authType.id)
+  @ManyToOne(() => AuthType, (authType) => authType.id, { nullable: false })
+  @JoinColumn({ name: 'auth_type_id' })
   authTypeId: number;
 
-  @Column({
+  @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',
     nullable: false,
-    default: 'now()',
+    default: () => 'now()',
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamptz',
     nullable: false,
-    default: 'now()',
+    default: () => 'now()',
   })
   updatedAt: Date;
 }

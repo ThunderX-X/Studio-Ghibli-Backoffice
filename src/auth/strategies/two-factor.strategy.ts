@@ -2,7 +2,6 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtService } from '@nestjs/jwt';
-import { AuthService } from '../services/auth.service';
 import { TwoFactorAuthService } from '../../multi-factor-auth/services/two-factor-auth.service';
 import { Request } from 'express';
 import { Payload } from '../models/payload.model';
@@ -10,11 +9,13 @@ import { ConfigType } from '@nestjs/config';
 import config from '../../config';
 import { TwoFactorLogin } from '../models/two-factor-login.model';
 import { AuthCodeTypes } from 'src/multi-factor-auth/enums/auth-codes.enum';
+import { ModulePermissionPayload } from '../models/module-payload.model';
+import { PermissionsService } from '../services/permissions.service';
 @Injectable()
 export class TwoFactorStrategy extends PassportStrategy(Strategy, 'TwoFactor') {
   constructor(
     @Inject(config.KEY) configService: ConfigType<typeof config>,
-    private readonly authService: AuthService,
+    private readonly permissionsService: PermissionsService,
     private readonly jwtService: JwtService,
     private readonly twoFactorService: TwoFactorAuthService,
   ) {
@@ -38,11 +39,13 @@ export class TwoFactorStrategy extends PassportStrategy(Strategy, 'TwoFactor') {
       codeTypeId as any,
     );
     if (!isValid) throw new BadRequestException(data);
-
+    const permissions: ModulePermissionPayload[] =
+      await this.permissionsService.getPermissionsAsPayloadType(userId);
     const newPayload: Payload = {
       sub: userId,
       twoFactor: twoFactor,
       twoFactorAuth: isValid,
+      permissions,
     };
     const token = { access_token: this.jwtService.sign(newPayload) };
     return token;

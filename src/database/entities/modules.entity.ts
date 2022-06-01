@@ -6,13 +6,16 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'auth_types' })
-export class AuthType {
+@Entity({ name: 'modules' })
+export class Module {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'description', type: 'varchar', length: 40, nullable: false })
-  description: string;
+  @Column({ name: 'name', type: 'varchar', length: 40, nullable: false })
+  name: string;
+
+  @Column({ name: 'active', type: 'boolean', nullable: false, default: false })
+  active: boolean;
 
   @CreateDateColumn({
     name: 'created_at',

@@ -1,25 +1,63 @@
 import { Injectable } from '@nestjs/common';
+import { RolesService } from 'src/auth/services/roles.service';
 import CrudService from '../../common/crud-service';
 import { CryptoService } from '../../common/crypto.service';
 import { User } from '../../database/entities/user.entity';
 import { CreateUser, UpdateUser } from '../dtos/user.dto';
 @Injectable()
 export class UsersService extends CrudService<User> {
-  constructor() {
+  constructor(private readonly rolesService: RolesService) {
     super(User);
   }
 
   async create(user: CreateUser) {
     user.password = await CryptoService.hashPassword(user.password);
-    return await super.make({ ...user });
+    const {
+      roleId,
+      active,
+      email,
+      firstName,
+      lastName,
+      password,
+      profilePicture,
+    } = user;
+    const role = await this.rolesService.getRoleById(roleId);
+
+    return await super.make({
+      active,
+      email,
+      firstName,
+      lastName,
+      password,
+      profilePicture,
+      role,
+    });
   }
 
   async update(userId: number, user: UpdateUser) {
-    return await super.modify(userId, { ...user });
+    const {
+      roleId,
+      active,
+      email,
+      firstName,
+      lastName,
+      password,
+      profilePicture,
+    } = user;
+    const role = await this.rolesService.getRoleById(roleId);
+    return await super.modify(userId, {
+      active,
+      email,
+      firstName,
+      lastName,
+      password,
+      profilePicture,
+      role,
+    });
   }
 
-  async findOne(userId: number) {
-    return await super.getOneById(userId);
+  async findById(userId: number) {
+    return await super.getOneById(userId, {}, ['role']);
   }
 
   async findByEmail(email: string) {

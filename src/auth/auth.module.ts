@@ -1,4 +1,4 @@
-import { Global, Module, ParseEnumPipe } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from '../users/services/users.service';
 import { MultiFactorAuthModule } from '../multi-factor-auth/multi-factor-auth.module';
@@ -9,12 +9,20 @@ import { JwtModule } from '@nestjs/jwt';
 import config from '../config';
 import { ConfigType } from '@nestjs/config';
 import { TwoFactorStrategy } from './strategies/two-factor.strategy';
+import { RolesGuard } from './guards/roles.guard';
+import { RolesService } from './services/roles.service';
+import { LoguedStrategy } from './strategies/logued.strategy';
+import { PermissionsService } from './services/permissions.service';
+import { RolesController } from './controllers/roles.controller';
+import { UsersModule } from 'src/users/users.module';
+import { PermissionsController } from './controllers/permissions.controller';
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule,
     MultiFactorAuthModule,
+    UsersModule,
     JwtModule.registerAsync({
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
@@ -27,8 +35,17 @@ import { TwoFactorStrategy } from './strategies/two-factor.strategy';
       },
     }),
   ],
-  controllers: [AuthController],
-  providers: [UsersService, AuthService, LocalStrategy, TwoFactorStrategy],
-  exports: [AuthService],
+  controllers: [AuthController, RolesController, PermissionsController],
+  providers: [
+    UsersService,
+    AuthService,
+    LocalStrategy,
+    TwoFactorStrategy,
+    RolesGuard,
+    RolesService,
+    LoguedStrategy,
+    PermissionsService,
+  ],
+  exports: [AuthService, RolesGuard, RolesService, LoguedStrategy],
 })
 export class AuthModule {}
