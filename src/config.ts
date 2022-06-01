@@ -5,12 +5,12 @@ export default registerAs('config', () => {
     appName: process.env.APP_NAME,
     requiredTwoFactor: process.env.REQUIRED_TWO_FACTOR === 'true',
     database: {
-      dbName: process.env.TYPEORM_DATABASE,
-      port: parseInt(process.env.TYPEORM_PORT, 10),
-      password: process.env.TYPEORM_PASSWORD,
-      username: process.env.TYPEORM_USERNAME,
-      host: process.env.TYPEORM_HOST,
-      type: process.env.TYPEORM_CONNECTION,
+      dbName: process.env.BACKOFFICE_DATABASE,
+      port: parseInt(process.env.BACKOFFICE_PORT, 10),
+      password: process.env.BACKOFFICE_PASSWORD,
+      username: process.env.BACKOFFICE_USERNAME,
+      host: process.env.BACKOFFICE_HOST,
+      type: process.env.BACKOFFICE_CONNECTION,
     },
     database_postgres: {
       dbName: process.env.HEROKU_DATABASE,

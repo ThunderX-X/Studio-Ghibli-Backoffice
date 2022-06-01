@@ -1,0 +1,44 @@
+[
+  {
+    "name": "backoffice",
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "",
+    "password": "",
+    "database": "",
+    "entities": [
+      "src/**/*.entity.ts"
+    ],
+    "migrations": [
+      "src/database/migrations/*.ts"
+    ],
+    "synchronize": false,
+    "autoSchemaSync": true,
+    "logging": true,
+    "cli": {
+      "migrationsDir": "src/database/migrations"
+    }
+  },
+  {
+    "name": "heroku-tracker",
+    "type": "postgres",
+    "host": "",
+    "port": 5432,
+    "username": "",
+    "password": "",
+    "database": "",
+    "entities": [
+      "src/movies/**/*.entity.ts"
+    ],
+    "migrations": [
+      "src/database/migrations/*.ts"
+    ],
+    "synchronize": false,
+    "autoSchemaSync": true,
+    "logging": true,
+    "cli": {
+      "migrationsDir": "src/database/migrations"
+    }
+  }
+]

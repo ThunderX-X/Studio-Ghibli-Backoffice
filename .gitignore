@@ -38,3 +38,5 @@ lerna-debug.log*
 
 #Override docker-compose file
 *override.yml
+
+ormconfig.json
