@@ -1,6 +1,8 @@
 import { Global, Module } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Movie } from 'src/movies/entities/movie.entity';
 import config from '../config';
 import { AuthTypeUser } from './entities/auth-types-user.entity';
 import { AuthType } from './entities/auth-types.entity';
@@ -11,28 +13,39 @@ import { User } from './entities/user.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      inject: [config.KEY],
-      useFactory: (configService: ConfigType<typeof config>) => {
-        const { dbName, port, password, username, host, type } =
-          configService.database;
-        return {
-          type: type as any,
-          host,
-          port,
-          username,
-          password,
-          database: dbName,
-          synchronize: false,
-          autoLoadEntities: true,
-        };
-      },
+      inject: [ConfigService, config.KEY],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        database: configService.get<string>('TYPEORM_DATABASE'),
+        port: configService.get<number>('TYPEORM_PORT'),
+        password: configService.get<string>('TYPEORM_PASSWORD'),
+        username: configService.get<string>('TYPEORM_USERNAME'),
+        host: configService.get<string>('TYPEORM_HOST'),
+        synchronize: false,
+        entities: [User, AuthType, AuthTypeUser, MultiFactorAuthCode],
+      }),
     }),
-    TypeOrmModule.forFeature([
-      AuthTypeUser,
-      AuthType,
-      MultiFactorAuthCode,
-      User,
-    ]),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        database: configService.get<string>('HEROKU_DB'),
+        port: configService.get<number>('HEROKU_PORT'),
+        password: configService.get<string>('HEROKU_PASSWORD'),
+        username: configService.get<string>('HEROKU_USER'),
+        host: configService.get<string>('HEROKU_HOST'),
+        synchronize: true,
+        logging: true,
+        entities: [Movie],
+        name: 'databaseHeroku',
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      }),
+      imports: [ConfigModule],
+      name: 'databaseHeroku',
+    }),
   ],
   exports: [TypeOrmModule],
   providers: [],
