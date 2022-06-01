@@ -4,7 +4,7 @@ FROM node:17.9 as builder
 
 RUN mkdir -p /usr/app
 
-COPY ["package.json", "package.json", "build/app-start.sh", "/usr/app"]
+COPY ["package.json", "package-lock.json", "build/app-start.sh", "/usr/app"]
 
 WORKDIR /usr/app
 
@@ -23,7 +23,7 @@ FROM node:17.9
 
 RUN mkdir -p /usr/app
 
-COPY ["package.json", "package.json", "build/app-start.sh", "/usr/app"]
+COPY ["package.json", "package-lock.json", "build/app-start.sh", "/usr/app"]
 
 WORKDIR /usr/app
 
