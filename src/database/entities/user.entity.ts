@@ -38,12 +38,15 @@ export class User {
   })
   profilePicture: string;
 
-  @Column({ name: 'password', type: 'varchar', length: 512, nullable: false })
+  @Column({ name: 'password', type: 'varchar', length: 512, nullable: true })
   password: string;
 
-  @ManyToOne(() => Role, (role) => role.id, { nullable: false })
+  @ManyToOne(() => Role, (role) => role.id, { nullable: true })
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @Column({ name: 'facebook_id', type: 'varchar', length: 256, nullable: true })
+  facebookId: string;
 
   @CreateDateColumn({
     name: 'created_at',

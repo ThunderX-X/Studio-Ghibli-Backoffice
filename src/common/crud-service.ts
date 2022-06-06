@@ -1,7 +1,7 @@
 import { FindConditions, getRepository, Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import 'reflect-metadata';
-import { DeepPartial } from 'typeorm/common/DeepPartial';
+import { DeepPartial } from 'typeorm';
 
 type ObjectType<T> = { new (): T };
 
@@ -34,6 +34,7 @@ export default abstract class CrudService<Entity> {
     filters: FindConditions<Entity> = {},
     relations: string[] = [],
   ): Promise<Entity> {
+    if (!id) return null;
     const entity = this.repository.findOneOrFail(id, {
       relations,
       where: filters,
@@ -46,12 +47,14 @@ export default abstract class CrudService<Entity> {
   }
 
   protected async modify(id: any, changes: DeepPartial<Entity>) {
+    if (!id) throw new NotFoundException('Invalid id');
     const entityToUpdate: Entity = await this.getOneById(id);
     this.repository.merge(entityToUpdate, changes);
     return await this.repository.save(entityToUpdate as any);
   }
 
   protected async remove(id: any) {
+    if (!id) throw new NotFoundException('Invalid id');
     return this.repository.delete(id);
   }
 
