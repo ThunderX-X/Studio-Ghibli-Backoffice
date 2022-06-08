@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 export const enviroments = {
   dev: '.env',
   test: '.test.env',
-  prod: 'prod.env',
+  prod: '.prod.env',
 };

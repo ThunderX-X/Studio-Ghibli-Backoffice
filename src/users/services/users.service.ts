@@ -1,27 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { userServices } from
 
 import { User } from '../entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from '../dtos/users.dtos';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(private configService: ConfigService) {}
-  private counterId = 1;
-  private users: User[] = [
-    {
-      id: 1,
-      first_name: 'Isaac',
-      last_name: 'Samuel',
-      email: 'isaac@gmail.com',
-      active: 'True',
-      profile_picture: 'picture.com',
-      password: '123',
-      rol_id: 'admmin',
-      //created_at: '16/05/2022',
-      //updated_at: '17/05/2022',
-    },
-  ];
+  //constructor(private configService: ConfigService) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>
+  );
+  //private counterId = 1;
+  // private users: User[] = [
+  //   {
+  //     id: 1,
+  //     first_name: 'Isaac',
+  //     last_name: 'Samuel',
+  //     email: 'isaac@gmail.com',
+  //     active: 'True',
+  //     profile_picture: 'picture.com',
+  //     password: '123',
+  //     rol_id: 'admmin',
+  //     //created_at: '16/05/2022',
+  //     //updated_at: '17/05/2022',
+  //   },
+  // ];
 
   createUser(payload: CreateUserDto) {
     console.log(payload);

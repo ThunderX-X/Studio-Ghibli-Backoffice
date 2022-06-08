@@ -5,10 +5,10 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  // @Get()
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
 
   //Ejemplo:
   //Forma_1
@@ -44,5 +44,9 @@ export class AppController {
   //   @Query('brand') brand: string,
   // ) {
   //   return `Users: limit=> ${limit} offset=> ${offset} brand=> ${brand}`;
+  // }
+  // @Get('/allusers')
+  // getus() {
+  //   return this.appService.getUs;
   // }
 }
