@@ -3,13 +3,15 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseEnumPipe,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthCodeTypes } from '../../multi-factor-auth/enums/auth-codes.enum';
 import { TwoFactorAuthService } from '../../multi-factor-auth/services/two-factor-auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,12 +33,16 @@ import { TwoFactorLogin } from '../models/two-factor-login.model';
 import { ErrorResponse } from 'src/common/error-response.model';
 import { LoguedModel } from '../models/logued.model';
 import { GenerationStatus } from '../../multi-factor-auth/interfaces/TwoFactorAuthentication';
+import { ConfigType } from '@nestjs/config';
+import config from 'src/config';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly twoFactorAuthService: TwoFactorAuthService,
     private readonly authService: AuthService,
+    @Inject(config.KEY)
+    private readonly configService: ConfigType<typeof config>,
   ) {}
 
   @UseGuards(AuthGuard('Local'))
@@ -118,5 +124,61 @@ export class AuthController {
   })
   twoFactorLogin(@Req() req: Request) {
     return req.user;
+  }
+
+  @UseGuards(AuthGuard('Facebook'))
+  @Get('facebook')
+  @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: `This endpoint enable facebook login`,
+    description: `This endpoint enable facebook login`,
+  })
+  facebookLogin(@Req() req: Request) {
+    return req.user;
+  }
+
+  @Get('/facebook/redirect')
+  @UseGuards(AuthGuard('Facebook'))
+  @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: `This endpoint redirects to frontend after facebook login`,
+    description: `This endpoint redirects to frontend after facebook login`,
+  })
+  async facebookLoginRedirect(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<any> {
+    const user: any = req.user;
+    res.redirect(
+      `${this.configService.frontendCallback}#access_token=${user.access_token}`,
+    );
+  }
+
+  @UseGuards(AuthGuard('Twitter'))
+  @Get('twitter')
+  @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: `This endpoint enable twitter login`,
+    description: `This endpoint enable twitter login`,
+  })
+  twitterLogin(@Req() req: Request) {
+    return req.user;
+  }
+
+  @Get('/twitter/redirect')
+  @UseGuards(AuthGuard('Twitter'))
+  @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: `This endpoint redirects to frontend after facebook login`,
+    description: `This endpoint redirects to frontend after facebook login`,
+  })
+  async twitterLoginRedirect(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<any> {
+    const user: any = req.user;
+    res.redirect(
+      `${this.configService.frontendCallback}#access_token=${user.access_token}`,
+    );
   }
 }

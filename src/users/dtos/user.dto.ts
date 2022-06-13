@@ -7,7 +7,9 @@ import {
   Length,
   MaxLength,
 } from 'class-validator';
+
 import { PartialType, ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 export class CreateUser {
   @IsNotEmpty()
@@ -39,6 +41,12 @@ export class CreateUser {
   @IsNotEmpty()
   @ApiProperty()
   password: string;
+
+  @Exclude()
+  facebookId: string;
+
+  @Exclude()
+  twitterId: string;
 
   @IsNotEmpty()
   @IsPositive()

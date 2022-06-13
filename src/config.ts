@@ -30,5 +30,16 @@ export default registerAs('config', () => {
     crypto: {
       key: process.env.ENCRYPTION_KEY,
     },
+    facebookAuth: {
+      clientID: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+    },
+    twitterAuth: {
+      clientID: process.env.TWITTER_CLIENT_ID,
+      clientSecret: process.env.TWITTER_CLIENT_SECRET,
+      callbackURL: process.env.TWITTER_CALLBACK_URL,
+    },
+    frontendCallback: process.env.FRONTEND_CALLBACK,
   };
 });

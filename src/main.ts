@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,9 +10,9 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-      // transformOptions: {
-      //   enableImplicitConversion: true,
-      // },
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   const swaggerConfig = new DocumentBuilder()
@@ -22,6 +23,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
   app.enableCors();
+  app.use(
+    session({
+      secret: process.env.ENCRYPTION_KEY,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
   await app.listen(3000);
 }
 bootstrap();
