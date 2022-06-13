@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-facebook';
 import { JwtService } from '@nestjs/jwt';
@@ -29,12 +29,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
     });
   }
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: Profile,
-    done: (err: any, user: any, info?: any) => void,
-  ) {
+  async validate(accessToken: string, refreshToken: string, profile: Profile) {
     const { name, emails, id, photos } = profile;
     const userDto = this.createUserDto({
       email: emails?.length > 0 ? emails[0].value : '',

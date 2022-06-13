@@ -31,12 +31,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, 'Twitter') {
     });
   }
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: any,
-    done: (err: any, user: any, info?: any) => void,
-  ) {
+  async validate(accessToken: string, refreshToken: string, profile: any) {
     const { displayName, id, photos } = profile;
     const userDto = this.createUserDto({
       email: id,
