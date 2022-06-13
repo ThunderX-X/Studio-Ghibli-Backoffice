@@ -23,7 +23,6 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post('createUser')
-  @ApiOperation({ summary: 'Create users' })
   createUser(@Body() payload: CreateUserDto) {
     return this.usersService.createUser(payload);
   }
@@ -42,7 +41,6 @@ export class UsersController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a user' })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateUserDto,
@@ -51,8 +49,41 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a user' })
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }
+
+  // @Post('createUser')
+  // @ApiOperation({ summary: 'Create users' })
+  // createUser(@Body() payload: CreateUserDto) {
+  //   return this.usersService.createUser(payload);
+  // }
+
+  // @Get()
+  // @ApiOperation({ summary: 'View all users' })
+  // getUsers() {
+  //   return this.usersService.findAllUsers();
+  // }
+
+  // @Get(':id')
+  // @ApiOperation({ summary: 'View one user' })
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // getUser(@Param('id', ParseIntPipe) id: number) {
+  //   return this.usersService.findOneUser(id);
+  // }
+
+  // @Put(':id')
+  // @ApiOperation({ summary: 'Update a user' })
+  // update(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() payload: UpdateUserDto,
+  // ) {
+  //   return this.usersService.updateUser(id, payload);
+  // }
+
+  // @Delete(':id')
+  // @ApiOperation({ summary: 'Delete a user' })
+  // delete(@Param('id', ParseIntPipe) id: number) {
+  //   return this.usersService.remove(id);
+  // }
 }
