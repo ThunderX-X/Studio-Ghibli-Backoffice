@@ -40,5 +40,6 @@ lerna-debug.log*
 *override.yml
 
 ormconfig.json
+ormconfig.js
 .vscode/
 .devcontainer/
