@@ -31,6 +31,6 @@ RUN npm install --only=production
 
 COPY --from=builder ["/usr/app/dist", "/usr/app"]
 
-EXPOSE 3000
+EXPOSE $PORT
 
 CMD ["/bin/bash", "app-start.sh"]

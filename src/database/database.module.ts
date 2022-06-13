@@ -41,6 +41,10 @@ const backofficeEntities = [
           synchronize: false,
           autoLoadEntities: true,
           entities: backofficeEntities,
+          ssl: {
+            require: false,
+            rejectUnauthorized: false,
+          },
         };
       },
     }),
