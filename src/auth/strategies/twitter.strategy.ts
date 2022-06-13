@@ -1,6 +1,6 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Profile, Strategy } from 'passport-facebook';
+import { Strategy } from '@superfaceai/passport-twitter-oauth2';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../services/auth.service';
 import { TwoFactorAuthService } from '../../multi-factor-auth/services/two-factor-auth.service';
@@ -11,7 +11,7 @@ import { PermissionsService } from '../services/permissions.service';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateUser } from 'src/users/dtos/user.dto';
 @Injectable()
-export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
+export class TwitterStrategy extends PassportStrategy(Strategy, 'Twitter') {
   constructor(
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
@@ -22,29 +22,31 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
     private readonly configService: ConfigType<typeof config>,
   ) {
     super({
-      clientID: configService.facebookAuth.clientID,
-      clientSecret: configService.facebookAuth.clientSecret,
-      callbackURL: configService.facebookAuth.callbackURL,
-      profileFields: ['name', 'picture', 'emails'],
+      authorizationURL: 'https://twitter.com/i/oauth2/authorize',
+      tokenURL: 'https://api.twitter.com/2/oauth2/token',
+      clientID: configService.twitterAuth.clientID,
+      clientSecret: configService.twitterAuth.clientSecret,
+      callbackURL: configService.twitterAuth.callbackURL,
+      scope: 'users.read offline.access tweet.read',
     });
   }
 
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: Profile,
+    profile: any,
     done: (err: any, user: any, info?: any) => void,
   ) {
-    const { name, emails, id, photos } = profile;
+    const { displayName, id, photos } = profile;
     const userDto = this.createUserDto({
-      email: emails?.length > 0 ? emails[0].value : '',
-      facebookId: id,
-      firstName: name.givenName,
-      lastName: name.familyName,
+      email: id,
+      twitterId: id,
+      firstName: displayName,
+      lastName: '',
       profilePicture: photos?.length > 0 ? photos[0].value : '',
     });
     let bdUser = await this.usersService.findByConditions({
-      facebookId: userDto.facebookId,
+      twitterId: userDto.twitterId,
     });
     if (!bdUser) bdUser = await this.usersService.create(userDto);
     await this.usersService.update(bdUser.id, { ...userDto });
@@ -66,7 +68,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
     lastName,
     email,
     profilePicture,
-    facebookId,
+    twitterId,
   }) {
     const userDto = new CreateUser();
     userDto.active = true;
@@ -76,7 +78,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
     userDto.password = null;
     userDto.roleId = null;
     userDto.profilePicture = profilePicture;
-    userDto.facebookId = facebookId;
+    userDto.twitterId = twitterId;
 
     return userDto;
   }

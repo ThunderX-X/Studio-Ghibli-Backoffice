@@ -17,6 +17,7 @@ import { RolesController } from './controllers/roles.controller';
 import { UsersModule } from 'src/users/users.module';
 import { PermissionsController } from './controllers/permissions.controller';
 import { FacebookStrategy } from './strategies/facebook.strategy';
+import { TwitterStrategy } from './strategies/twitter.strategy';
 
 @Global()
 @Module({
@@ -47,6 +48,7 @@ import { FacebookStrategy } from './strategies/facebook.strategy';
     LoguedStrategy,
     PermissionsService,
     FacebookStrategy,
+    TwitterStrategy,
   ],
   exports: [AuthService, RolesGuard, RolesService, LoguedStrategy],
 })

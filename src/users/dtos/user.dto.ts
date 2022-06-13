@@ -45,6 +45,9 @@ export class CreateUser {
   @Exclude()
   facebookId: string;
 
+  @Exclude()
+  twitterId: string;
+
   @IsNotEmpty()
   @IsPositive()
   @ApiProperty()

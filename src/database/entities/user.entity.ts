@@ -48,6 +48,9 @@ export class User {
   @Column({ name: 'facebook_id', type: 'varchar', length: 256, nullable: true })
   facebookId: string;
 
+  @Column({ name: 'twitter_id', type: 'varchar', length: 256, nullable: true })
+  twitterId: string;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',

@@ -130,8 +130,8 @@ export class AuthController {
   @Get('facebook')
   @HttpCode(HttpStatus.PERMANENT_REDIRECT)
   @ApiOperation({
-    summary: `This endpoint validate two-factor authentication when enabled and return new token`,
-    description: `This endpoint enables two-factor authentication when enabled, standard authentication is required through the 'login' endpoint, the provided token is valid for all endpoints`,
+    summary: `This endpoint enable facebook login`,
+    description: `This endpoint enable facebook login`,
   })
   facebookLogin(@Req() req: Request) {
     return req.user;
@@ -140,7 +140,39 @@ export class AuthController {
   @Get('/facebook/redirect')
   @UseGuards(AuthGuard('Facebook'))
   @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: `This endpoint redirects to frontend after facebook login`,
+    description: `This endpoint redirects to frontend after facebook login`,
+  })
   async facebookLoginRedirect(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<any> {
+    const user: any = req.user;
+    res.redirect(
+      `${this.configService.frontendCallback}#access_token=${user.access_token}`,
+    );
+  }
+
+  @UseGuards(AuthGuard('Twitter'))
+  @Get('twitter')
+  @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: `This endpoint enable twitter login`,
+    description: `This endpoint enable twitter login`,
+  })
+  twitterLogin(@Req() req: Request) {
+    return req.user;
+  }
+
+  @Get('/twitter/redirect')
+  @UseGuards(AuthGuard('Twitter'))
+  @HttpCode(HttpStatus.PERMANENT_REDIRECT)
+  @ApiOperation({
+    summary: `This endpoint redirects to frontend after facebook login`,
+    description: `This endpoint redirects to frontend after facebook login`,
+  })
+  async twitterLoginRedirect(
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<any> {
