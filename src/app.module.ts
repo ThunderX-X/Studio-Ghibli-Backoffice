@@ -8,7 +8,7 @@ import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { enviroments } from './enviroments';
 import config from './config';
-//import { MoviesModule } from './movies/movies.module';
+import { MoviesModule } from './movies/movies.module';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import config from './config';
     HttpModule,
     UsersModule,
     DatabaseModule,
-    //MoviesModule,
+    MoviesModule,
   ],
   controllers: [AppController],
   providers: [

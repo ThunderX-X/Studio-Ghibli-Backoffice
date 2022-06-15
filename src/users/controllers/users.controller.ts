@@ -9,13 +9,14 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
-  //ParseIntPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 import { UsersService } from '../services/users.service';
-import { ParseIntPipe } from '../../common/parse-int.pipe';
+//import { ParseIntPipe } from '../../common/parse-int.pipe';
 import { CreateUserDto, UpdateUserDto } from '../dtos/users.dtos';
+import { any } from 'joi';
 
 @ApiTags('Users')
 @Controller('users')

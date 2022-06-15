@@ -1,8 +1,11 @@
 import { Module, Global } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 //import { ClientRequest } from 'http';
 //import { Client } from 'pg';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Movie } from 'src/movies/entities/movie.entity';
+import { Producers } from 'src/movies/entities/producer.entity';
+import { User } from 'src/users/entities/user.entity';
 import config from '../config';
 
 //const API_KEY = '123';
@@ -20,43 +23,45 @@ import config from '../config';
     TypeOrmModule.forRootAsync({
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
-        const { user, host, dbName, password, port } = configService.postgres;
+        const { dbName, port, password, username, host, type } =
+          configService.database;
         return {
-          type: 'postgres',
+          type: type as any,
           host,
           port,
-          username: user,
+          username,
           password,
           database: dbName,
-          synchronize: true,
+          synchronize: false,
           autoLoadEntities: true,
+          entities: [User],
         };
       },
     }),
+    //TypeOrmModule.forFeature(backofficeEntities),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        database: configService.get<string>('HEROKU_DATABASE'),
+        port: configService.get<number>('HEROKU_PORT'),
+        password: configService.get<string>('HEROKU_PASSWORD'),
+        username: configService.get<string>('HEROKU_USERNAME'),
+        host: configService.get<string>('HEROKU_HOST'),
+        synchronize: false,
+        logging: false,
+        entities: [Movie, Producers],
+        name: 'databaseHeroku',
+        ssl: {
+          require: false,
+          rejectUnauthorized: false,
+        },
+      }),
+      imports: [ConfigModule],
+      name: 'databaseHeroku',
+    }),
   ],
-  providers: [
-    // {
-    //   provide: 'API_KEY',
-    //   useValue: process.env.NODE_ENV === 'prod' ? API_KEY_PROD : API_KEY,
-    // },
-    // {
-    //   provide: 'PG',
-    //   //useValue: client,
-    //   useFactory: (configService: ConfigType<typeof config>) => {
-    //     const { user, host, dbName, password, port } = configService.postgres;
-    //     const client = new Client({
-    //       user,
-    //       host,
-    //       database: dbName,
-    //       password,
-    //       port,
-    //     });
-    //     client.connect();
-    //     return client;
-    //   },
-    //   inject: [config.KEY],
-    // },
-  ],
+  providers: [],
   exports: [TypeOrmModule],
 })
 export class DatabaseModule {}
