@@ -1,13 +1,14 @@
+import { Exclude } from 'class-transformer';
+import { Role } from 'src/database/entities/roles.entity';
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import { Role } from './roles.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -39,6 +40,7 @@ export class User {
   profilePicture: string;
 
   @Column({ name: 'password', type: 'varchar', length: 512, nullable: true })
+  @Exclude()
   password: string;
 
   @ManyToOne(() => Role, (role) => role.id, { nullable: true })

@@ -43,3 +43,7 @@ ormconfig.json
 ormconfig.js
 .vscode/
 .devcontainer/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json

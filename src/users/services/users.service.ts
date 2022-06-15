@@ -1,59 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { RolesService } from 'src/auth/services/roles.service';
-import CrudService from '../../common/crud-service';
 import { CryptoService } from '../../common/crypto.service';
+
 import { User } from '../../database/entities/user.entity';
-import { CreateUser, UpdateUser } from '../dtos/user.dto';
+import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+
 import { DeepPartial } from 'typeorm';
+
 @Injectable()
-export class UsersService extends CrudService<User> {
-  constructor(private readonly rolesService: RolesService) {
-    super(User);
+export class UsersService {
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private readonly rolesService: RolesService,
+  ) {}
+
+  findAllUsers() {
+    return this.userRepo.find({ relations: ['role'] });
   }
 
-  async create(user: CreateUser) {
-    user.password = !!user.password
-      ? await CryptoService.hashPassword(user.password)
-      : user.password;
-    const { roleId } = user;
+  async findOneUser(id: number) {
+    const user = await this.userRepo.findOne({ id }, { relations: ['role'] });
+    if (!user) {
+      throw new NotFoundException(`User #${id} not found`);
+    }
+    return user;
+  }
+
+  async createUser(data: CreateUserDto) {
+    data.password = !!data.password
+      ? await CryptoService.hashPassword(data.password)
+      : data.password;
+    const { roleId } = data;
     const role = await this.rolesService.getRoleById(roleId);
 
-    return await super.make({ ...user, role: role });
+    const newUser = this.userRepo.create({ ...data, role });
+    return this.userRepo.save(newUser);
   }
 
-  async update(userId: number, user: UpdateUser) {
-    const {
-      roleId,
-      active,
-      email,
-      firstName,
-      lastName,
-      password,
-      profilePicture,
-    } = user;
+  async updateUser(id: number, changes: UpdateUserDto) {
+    const user = await this.userRepo.findOne({ id });
+    const { roleId } = changes;
     const role = await this.rolesService.getRoleById(roleId);
-    return await super.modify(userId, {
-      active,
-      email,
-      firstName,
-      lastName,
-      password,
-      profilePicture,
-      role,
-    });
+    this.userRepo.merge(user, { ...changes, role });
+    return this.userRepo.save(user);
   }
 
-  async findById(userId: number) {
-    return await super.getOneById(userId, {}, ['role']);
+  remove(id: number) {
+    return this.userRepo.delete(id);
   }
 
   async findByEmail(email: string) {
-    const user = await super.getAll({ email });
+    const user = await this.userRepo.find({ where: { email } });
     return user[0];
   }
 
   async findByConditions(conditions: DeepPartial<User>) {
-    const user = await super.getAll(conditions);
+    const user = await this.userRepo.find(conditions);
     return user[0];
   }
 }

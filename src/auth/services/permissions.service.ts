@@ -19,7 +19,7 @@ export class PermissionsService extends CrudService<Permission> {
   }
 
   async getUserPermissions(userId: number): Promise<Permission[]> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findOneUser(userId);
     if (!this.userIsActive(user) && !user.role) return [];
     const rolePermissions = await this.permissionsRepository.find({
       relations: ['permission'],

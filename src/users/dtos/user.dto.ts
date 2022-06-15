@@ -1,57 +1,63 @@
 import {
-  IsBoolean,
+  IsString,
+  IsUrl,
   IsEmail,
   IsNotEmpty,
-  IsPositive,
-  IsUrl,
+  IsNumber,
   Length,
   MaxLength,
+  IsBoolean,
+  IsPositive,
 } from 'class-validator';
 
-import { PartialType, ApiProperty } from '@nestjs/swagger';
+import { PartialType, ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 
-export class CreateUser {
+export class CreateUserDto {
   @IsNotEmpty()
   @Length(2, 50)
-  @ApiProperty()
+  @ApiProperty({ description: 'User first name' })
   firstName: string;
 
   @IsNotEmpty()
   @Length(2, 50)
-  @ApiProperty()
+  @ApiProperty({ description: 'User last name' })
   lastName: string;
 
   @IsNotEmpty()
   @IsEmail()
   @MaxLength(75)
-  @ApiProperty()
+  @ApiProperty({ description: 'Email' })
   email: string;
 
   @IsNotEmpty()
   @IsBoolean()
-  @ApiProperty()
+  @ApiProperty({ description: 'Status' })
   active: boolean;
 
   @IsNotEmpty()
   @IsUrl()
-  @ApiProperty()
+  @ApiProperty({ description: 'Image user' })
   profilePicture: string;
 
-  @IsNotEmpty()
-  @ApiProperty()
-  password: string;
-
   @Exclude()
+  @ApiHideProperty()
   facebookId: string;
 
   @Exclude()
+  @ApiHideProperty()
   twitterId: string;
 
+  @IsString()
   @IsNotEmpty()
+  @ApiProperty({ description: 'Password' })
+  password: string;
+
+  @IsNumber()
   @IsPositive()
-  @ApiProperty()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'Role Id' })
   roleId: number;
 }
 
-export class UpdateUser extends PartialType(CreateUser) {}
+export class UpdateUserDto extends PartialType(CreateUserDto) {}

@@ -9,7 +9,7 @@ import { ConfigType } from '@nestjs/config';
 import { Payload } from '../models/payload.model';
 import { PermissionsService } from '../services/permissions.service';
 import { UsersService } from 'src/users/services/users.service';
-import { CreateUser } from 'src/users/dtos/user.dto';
+import { CreateUserDto } from 'src/users/dtos/user.dto';
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
   constructor(
@@ -41,8 +41,8 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
     let bdUser = await this.usersService.findByConditions({
       facebookId: userDto.facebookId,
     });
-    if (!bdUser) bdUser = await this.usersService.create(userDto);
-    await this.usersService.update(bdUser.id, { ...userDto });
+    if (!bdUser) bdUser = await this.usersService.createUser(userDto)[0];
+    await this.usersService.updateUser(bdUser.id, { ...userDto });
 
     const permissions =
       await this.permissionsService.getPermissionsAsPayloadType(bdUser.id);
@@ -63,7 +63,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'Facebook') {
     profilePicture,
     facebookId,
   }) {
-    const userDto = new CreateUser();
+    const userDto = new CreateUserDto();
     userDto.active = true;
     userDto.email = email;
     userDto.firstName = firstName;

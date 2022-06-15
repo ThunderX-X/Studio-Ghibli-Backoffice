@@ -75,7 +75,7 @@ export class EmailTwoFactorAuthenticationService
   }
 
   private async sendEmailToUser(userId: number, code: string) {
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findOneUser(userId);
     const { email, firstName, lastName } = user;
     return await this.emailService.send(
       email,

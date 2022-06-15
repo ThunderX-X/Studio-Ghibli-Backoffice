@@ -9,7 +9,7 @@ import { AuthType } from './entities/auth-types.entity';
 import { MultiFactorAuthCode } from './entities/multi-factor-auth-codes.entity';
 import { RolePermission } from './entities/role-permissions.entity';
 import { Role } from './entities/roles.entity';
-import { User } from './entities/user.entity';
+import { User } from 'src/database/entities/user.entity';
 import { Module as ModuleDb } from './entities/modules.entity';
 import { Permission } from './entities/permissions.entity';
 
@@ -71,7 +71,7 @@ const backofficeEntities = [
       name: 'databaseHeroku',
     }),
   ],
-  exports: [TypeOrmModule],
   providers: [],
+  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}
