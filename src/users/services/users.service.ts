@@ -54,11 +54,11 @@ export class UsersService {
 
   async findByEmail(email: string) {
     const user = await this.userRepo.find({ where: { email } });
-    return user[0];
+    return user ? user[0] : null;
   }
 
   async findByConditions(conditions: DeepPartial<User>) {
     const user = await this.userRepo.find(conditions);
-    return user[0];
+    return user ? user[0] : null;
   }
 }
