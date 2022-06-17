@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import CrudService from 'src/common/crud-service';
 import { Permission } from 'src/database/entities/permissions.entity';
@@ -19,6 +19,7 @@ export class PermissionsService extends CrudService<Permission> {
   }
 
   async getUserPermissions(userId: number): Promise<Permission[]> {
+    if (!userId || userId < 1) throw new NotFoundException('User not found');
     const user = await this.usersService.findOneUser(userId);
     if (!this.userIsActive(user) && !user.role) return [];
     const rolePermissions = await this.permissionsRepository.find({
