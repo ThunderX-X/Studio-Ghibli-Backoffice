@@ -41,8 +41,8 @@ const backofficeEntities = [
           synchronize: false,
           autoLoadEntities: true,
           entities: backofficeEntities,
-          ssl: false,
-          extra: {
+          ssl: {
+            require: false,
             rejectUnauthorized: false,
           },
         };
