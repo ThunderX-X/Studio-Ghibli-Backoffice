@@ -12,6 +12,7 @@ import {
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -30,6 +31,8 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ErrorResponse } from 'src/common/error-response.model';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { Request } from 'express';
+import { Payload } from 'src/auth/models/payload.model';
 
 @ApiTags('users')
 @Controller('users')
@@ -58,6 +61,16 @@ export class UsersController {
   })
   createUser(@Body() payload: CreateUserDto) {
     return this.usersService.createUser(payload);
+  }
+
+  @Get('me')
+  @ApiOperation({ summary: 'View logued user info' })
+  @UseGuards(AuthGuard('Logued'))
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  getMe(@Req() req) {
+    const { sub: userId } = req.user as Payload;
+    return this.getUser(userId);
   }
 
   @Get()
