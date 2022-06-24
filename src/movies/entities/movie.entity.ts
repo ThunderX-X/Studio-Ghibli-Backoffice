@@ -5,33 +5,42 @@ export class Movie {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({
+    name: 'title',
+    type: 'varchar',
+    length: 255,
+    unique: true,
+    nullable: false,
+  })
   title: string;
 
-  @Column({ type: 'varchar' })
-  original_title: string;
+  @Column({ name: 'original_title', type: 'varchar', nullable: false })
+  originalTitle: string;
 
-  @Column({ type: 'int' })
-  release_year: number;
+  @Column({ name: 'romanised_title', type: 'varchar', nullable: false })
+  romanisedTitle: string;
 
-  @Column({ type: 'varchar' })
-  wiki_link: string;
+  @Column({ name: 'release_year', type: 'int', nullable: false })
+  releaseYear: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ name: 'wiki_link', type: 'varchar', nullable: false })
+  wikiLink: string;
+
+  @Column({ name: 'music', type: 'varchar', nullable: false })
   music: string;
 
-  @Column({ type: 'int' })
-  duration: string;
+  @Column({ name: 'duration', type: 'int', nullable: false })
+  duration: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ name: 'cover', type: 'varchar', nullable: false })
   cover: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ name: 'banner', type: 'varchar', nullable: false })
   banner: string;
 
-  @Column({ type: 'text' })
+  @Column({ name: 'description', type: 'text', nullable: false })
   description: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ name: 'trailer', type: 'varchar', nullable: false })
   trailer: string;
 }
