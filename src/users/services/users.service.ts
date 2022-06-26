@@ -103,7 +103,7 @@ export class UsersService {
 
   async remove(id: number) {
     await this.userRepo.update(id, { active: false });
-    return this.findOneUser(id);
+    return this.userRepo.findOne(id);
   }
 
   async findByEmail(email: string) {
