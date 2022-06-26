@@ -1,4 +1,5 @@
 import {
+  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -10,6 +11,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthCodeTypes } from '../../multi-factor-auth/enums/auth-codes.enum';
@@ -37,6 +39,7 @@ import { ConfigType } from '@nestjs/config';
 import config from 'src/config';
 import { UserAuthsService } from 'src/multi-factor-auth/services/user-auths.service';
 import { Payload } from '../models/payload.model';
+import { AuthType } from 'src/database/entities/auth-types.entity';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -66,6 +69,7 @@ export class AuthController {
     - /auth/generate
     - /auth/availableTwoFactors`,
   })
+  @UseInterceptors(ClassSerializerInterceptor)
   login(@Req() req: Request) {
     return req.user;
   }
@@ -95,6 +99,7 @@ export class AuthController {
     enum: AuthCodeTypes,
     description: 'Two factor code type to generate',
   })
+  @UseInterceptors(ClassSerializerInterceptor)
   generate(
     @Param('codeType', new ParseEnumPipe(AuthCodeTypes))
     codeType: string,
@@ -124,6 +129,7 @@ export class AuthController {
     summary: `This endpoint validate two-factor authentication when enabled and return new token`,
     description: `This endpoint enables two-factor authentication when enabled, standard authentication is required through the 'login' endpoint, the provided token is valid for all endpoints`,
   })
+  @UseInterceptors(ClassSerializerInterceptor)
   twoFactorLogin(@Req() req: Request) {
     return req.user;
   }
@@ -136,6 +142,7 @@ export class AuthController {
     summary: `This endpoint list the available twoFactor autentication methods`,
     description: `This endpoint list the available twoFactor autentication methods`,
   })
+  @UseInterceptors(ClassSerializerInterceptor)
   async availableTwoFactor() {
     return this.twoFactorAuthService.getAvalilableAuths();
   }
@@ -148,9 +155,12 @@ export class AuthController {
     summary: `This endpoint list the available twoFactor autentication methods for the logued user`,
     description: `This endpoint list the available twoFactor autentication methods for the logued user`,
   })
+  @UseInterceptors(ClassSerializerInterceptor)
   async availableUserTwoFactor(@Req() req: Request) {
     const { sub: userId } = req.user as Payload;
-    return this.twoFactorAuthService.getAvalilableAuthsUser(userId);
+    const availableAuths =
+      await this.twoFactorAuthService.getAvalilableAuthsUser(userId);
+    return availableAuths.map((method) => method.authType);
   }
 
   @UseGuards(AuthGuard('Facebook'))
