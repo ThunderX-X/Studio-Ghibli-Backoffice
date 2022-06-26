@@ -14,18 +14,22 @@ export class UserAuthsService extends CrudService<AuthTypeUser> {
   }
 
   async getByTypeAndUser(userId: number, codeType: AuthCodeTypes) {
-    return await super.getAll({ userId, authTypeId: codeType });
+    return await super.getAll({ userId, authType: codeType });
   }
 
   async create(userId: number, codeType: AuthCodeTypes) {
-    return await super.make({ userId, authTypeId: codeType });
+    return await super.make({ userId, authType: codeType });
   }
 
   async delete(userId: number, codeType: AuthCodeTypes) {
-    return await super.removeByConditions({ userId, authTypeId: codeType });
+    return await super.removeByConditions({ userId, authType: codeType });
+  }
+
+  async deleteAll(userId: number) {
+    return await super.removeByConditions({ userId });
   }
 
   async getAllByUser(userId: number) {
-    return super.getAll({ userId }, ['authTypeId']);
+    return super.getAll({ userId }, ['authType']);
   }
 }

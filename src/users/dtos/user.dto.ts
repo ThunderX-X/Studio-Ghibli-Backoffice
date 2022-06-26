@@ -8,10 +8,14 @@ import {
   MaxLength,
   IsBoolean,
   IsPositive,
+  ArrayNotEmpty,
+  ArrayMinSize,
+  IsEnum,
 } from 'class-validator';
 
 import { PartialType, ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { AuthCodeTypes } from 'src/multi-factor-auth/enums/auth-codes.enum';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -58,6 +62,18 @@ export class CreateUserDto {
   @IsNotEmpty()
   @ApiProperty({ description: 'Role Id' })
   roleId: number;
+
+  @IsNotEmpty()
+  @ArrayNotEmpty()
+  @ArrayMinSize(1)
+  @IsEnum(AuthCodeTypes, { each: true })
+  @IsString({ each: true })
+  @ApiProperty({
+    description: 'List of two factor methods enabled for the user',
+    type: Array(AuthCodeTypes),
+    enum: AuthCodeTypes,
+  })
+  twoFactorMethods: AuthCodeTypes[];
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}

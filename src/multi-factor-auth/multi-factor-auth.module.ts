@@ -23,6 +23,7 @@ import { UserAuthsService } from './services/user-auths.service';
     AuthCodesService,
     EmailService,
     UsersService,
+    UserAuthsService,
     TwoFactorAuthService,
     TotpTwoFactorAuthService,
   ],

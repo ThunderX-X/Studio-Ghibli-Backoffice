@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AuthType } from 'src/database/entities/auth-types.entity';
+import { Repository } from 'typeorm';
 import { AuthCodeTypes } from '../enums/auth-codes.enum';
 import { TwoFactorAuthentication } from '../interfaces/TwoFactorAuthentication';
 import { EmailTwoFactorAuthenticationService } from './email-two-factor-authentication.service';
@@ -15,10 +18,16 @@ export class TwoFactorAuthService {
   constructor(
     private readonly moduleRef: ModuleRef,
     private readonly userAuthsService: UserAuthsService,
+    @InjectRepository(AuthType)
+    private readonly authTypesRepository: Repository<AuthType>,
   ) {}
 
-  getAvalilableAuths(userId: number) {
+  getAvalilableAuthsUser(userId: number) {
     return this.userAuthsService.getAllByUser(userId);
+  }
+
+  getAvalilableAuths() {
+    return this.authTypesRepository.find();
   }
 
   async generate(userId: number, authType: AuthCodeTypes) {
