@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -69,6 +73,8 @@ export class UsersService {
     data.password = !!data.password
       ? await CryptoService.hashPassword(data.password)
       : data.password;
+    if (this.existEmail(data.email))
+      throw new BadRequestException('Ya existe un usuario con este email');
     const { roleId } = data;
     const role = await this.rolesService.getRoleById(roleId);
     let newUser = this.userRepo.create({ ...data, role });
@@ -78,8 +84,13 @@ export class UsersService {
     return newUser;
   }
 
+  private async existEmail(email: string) {
+    const user = await this.findByEmail(email);
+    return !!user;
+  }
+
   async updateUser(id: number, changes: UpdateUserDto) {
-    const user = await this.userRepo.findOne({ id });
+    const user = await this.findOneUser(id);
     const { roleId } = changes;
     const role = (await this.rolesService.getRoleById(roleId)) || user.role;
     this.userRepo.merge(user, { ...changes, role });
@@ -89,17 +100,20 @@ export class UsersService {
     return this.findOneUser(updatedUser.id);
   }
 
-  remove(id: number) {
-    return this.userRepo.update(id, { active: false });
+  async remove(id: number) {
+    await this.userRepo.update(id, { active: false });
+    return this.findOneUser(id);
   }
 
   async findByEmail(email: string) {
-    const user = await this.userRepo.find({ where: { email } });
+    const user = await this.userRepo.findOne({
+      where: { email, active: true },
+    });
     return user ? user[0] : null;
   }
 
   async findByConditions(conditions: DeepPartial<User>) {
-    const user = await this.userRepo.find(conditions);
+    const user = await this.userRepo.find({ ...conditions });
     return user ? user[0] : null;
   }
 }
