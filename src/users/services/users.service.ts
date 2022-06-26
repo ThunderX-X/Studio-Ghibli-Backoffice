@@ -21,11 +21,22 @@ export class UsersService {
   ) {}
 
   findAllUsers() {
-    return this.userRepo.find({ relations: ['role'] });
+    return this.userRepo.find({
+      where: {
+        active: true,
+      },
+      relations: ['role'],
+    });
   }
 
   async findOneUser(id: number) {
-    const user = await this.userRepo.findOne({ id }, { relations: ['role'] });
+    const user = await this.userRepo.findOne({
+      where: {
+        id,
+        active: true,
+      },
+      relations: ['role'],
+    });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
@@ -79,7 +90,7 @@ export class UsersService {
   }
 
   remove(id: number) {
-    return this.userRepo.delete(id);
+    return this.userRepo.update(id, { active: false });
   }
 
   async findByEmail(email: string) {
