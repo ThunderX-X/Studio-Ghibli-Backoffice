@@ -73,7 +73,8 @@ export class UsersService {
     data.password = !!data.password
       ? await CryptoService.hashPassword(data.password)
       : data.password;
-    if (this.existEmail(data.email))
+    const existEmail = await this.existEmail(data.email);
+    if (existEmail)
       throw new BadRequestException('Ya existe un usuario con este email');
     const { roleId } = data;
     const role = await this.rolesService.getRoleById(roleId);
@@ -109,7 +110,7 @@ export class UsersService {
     const user = await this.userRepo.findOne({
       where: { email, active: true },
     });
-    return user ? user[0] : null;
+    return user;
   }
 
   async findByConditions(conditions: DeepPartial<User>) {
