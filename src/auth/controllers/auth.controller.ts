@@ -35,6 +35,8 @@ import { LoguedModel } from '../models/logued.model';
 import { GenerationStatus } from '../../multi-factor-auth/interfaces/TwoFactorAuthentication';
 import { ConfigType } from '@nestjs/config';
 import config from 'src/config';
+import { UserAuthsService } from 'src/multi-factor-auth/services/user-auths.service';
+import { Payload } from '../models/payload.model';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -124,6 +126,31 @@ export class AuthController {
   })
   twoFactorLogin(@Req() req: Request) {
     return req.user;
+  }
+
+  @Get('availableTwoFactor')
+  @UseGuards(AuthGuard('Logued'))
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: `This endpoint list the available twoFactor autentication methods`,
+    description: `This endpoint list the available twoFactor autentication methods`,
+  })
+  async availableTwoFactor() {
+    return this.twoFactorAuthService.getAvalilableAuths();
+  }
+
+  @Get('availableTwoFactor/me')
+  @UseGuards(AuthGuard('Logued'))
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: `This endpoint list the available twoFactor autentication methods for the logued user`,
+    description: `This endpoint list the available twoFactor autentication methods for the logued user`,
+  })
+  async availableUserTwoFactor(@Req() req: Request) {
+    const { sub: userId } = req.user as Payload;
+    return this.twoFactorAuthService.getAvalilableAuthsUser(userId);
   }
 
   @UseGuards(AuthGuard('Facebook'))

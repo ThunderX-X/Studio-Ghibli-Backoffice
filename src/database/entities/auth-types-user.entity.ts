@@ -20,7 +20,7 @@ export class AuthTypeUser {
 
   @ManyToOne(() => AuthType, (authType) => authType.id, { nullable: false })
   @JoinColumn({ name: 'auth_type_id' })
-  authTypeId: number;
+  authType: number;
 
   @CreateDateColumn({
     name: 'created_at',

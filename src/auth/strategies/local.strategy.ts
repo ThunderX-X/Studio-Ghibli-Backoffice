@@ -30,7 +30,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'Local') {
       password,
     );
     if (!user) throw new UnauthorizedException('Invalid login');
-    const availableAuths = await this.twoFactorService.getAvalilableAuths(
+    const availableAuths = await this.twoFactorService.getAvalilableAuthsUser(
       user.id,
     );
     const twoFactorEnabled =
