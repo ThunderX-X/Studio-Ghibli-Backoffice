@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AuthType } from './auth-types.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'auth_types_user' })
 export class AuthTypeUser {
@@ -22,6 +23,7 @@ export class AuthTypeUser {
   @JoinColumn({ name: 'auth_type_id' })
   authType: number;
 
+  @Exclude()
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',
@@ -30,6 +32,7 @@ export class AuthTypeUser {
   })
   createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamptz',
