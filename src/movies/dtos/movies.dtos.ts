@@ -16,28 +16,33 @@ export class CreateMovieDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  readonly original_title: string;
+  readonly originalTitle: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly romanisedTitle: string;
 
   @IsNumber()
   @IsNotEmpty()
   @IsPositive()
   @ApiProperty()
-  readonly release_year: number;
+  readonly releaseYear: number;
 
   @IsUrl()
   @IsNotEmpty()
   @ApiProperty()
-  readonly wiki_link: string;
+  readonly wikiLink: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   readonly music: string;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   @ApiProperty()
-  readonly duration: string;
+  readonly duration: number;
 
   @IsUrl()
   @IsNotEmpty()

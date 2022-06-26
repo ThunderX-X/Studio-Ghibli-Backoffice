@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -24,8 +28,16 @@ export class MoviesService {
     return movie;
   }
 
-  create(data: CreateMovieDto) {
+  async create(data: CreateMovieDto) {
     const newMovie = this.movieRepo.create(data);
+    const { title, originalTitle, romanisedTitle } = data;
+    const existMovie = !!(await this.movieRepo.findOne({
+      where: [{ title }, { originalTitle }, { romanisedTitle }],
+    }));
+    if (existMovie)
+      throw new ConflictException(
+        'Ya existe una pelicula con uno o varios de los titulos ingresados',
+      );
     return this.movieRepo.save(newMovie);
   }
 

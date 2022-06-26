@@ -15,21 +15,21 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { MoviesService } from './../services/movies.service';
 import { CreateMovieDto, UpdateMovieDto } from './../dtos/movies.dtos';
 
-@ApiTags('Movies')
+@ApiTags('movies')
 @Controller('movies')
 export class MoviesController {
   constructor(private moviesService: MoviesService) {}
 
   @Get()
   @ApiOperation({ summary: 'List of movies' })
-  getProducts() {
+  getMovies() {
     return this.moviesService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Consult one movie for ID' })
   @HttpCode(HttpStatus.ACCEPTED)
-  getProduct(@Param('id', ParseIntPipe) id: number) {
+  getMovie(@Param('id', ParseIntPipe) id: number) {
     return this.moviesService.findOne(id);
   }
 
