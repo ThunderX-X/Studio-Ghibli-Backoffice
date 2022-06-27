@@ -37,9 +37,7 @@ import { LoguedModel } from '../models/logued.model';
 import { GenerationStatus } from '../../multi-factor-auth/interfaces/TwoFactorAuthentication';
 import { ConfigType } from '@nestjs/config';
 import config from 'src/config';
-import { UserAuthsService } from 'src/multi-factor-auth/services/user-auths.service';
 import { Payload } from '../models/payload.model';
-import { AuthType } from 'src/database/entities/auth-types.entity';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -135,7 +133,7 @@ export class AuthController {
   }
 
   @Get('availableTwoFactor')
-  @UseGuards(AuthGuard('Logued'))
+  @UseGuards(LocalGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -148,7 +146,7 @@ export class AuthController {
   }
 
   @Get('availableTwoFactor/me')
-  @UseGuards(AuthGuard('Logued'))
+  @UseGuards(LocalGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
