@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -21,11 +25,22 @@ export class UsersService {
   ) {}
 
   findAllUsers() {
-    return this.userRepo.find({ relations: ['role'] });
+    return this.userRepo.find({
+      where: {
+        active: true,
+      },
+      relations: ['role'],
+    });
   }
 
   async findOneUser(id: number) {
-    const user = await this.userRepo.findOne({ id }, { relations: ['role'] });
+    const user = await this.userRepo.findOne({
+      where: {
+        id,
+        active: true,
+      },
+      relations: ['role'],
+    });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
@@ -58,6 +73,9 @@ export class UsersService {
     data.password = !!data.password
       ? await CryptoService.hashPassword(data.password)
       : data.password;
+    const existEmail = await this.existEmail(data.email);
+    if (existEmail)
+      throw new BadRequestException('Ya existe un usuario con este email');
     const { roleId } = data;
     const role = await this.rolesService.getRoleById(roleId);
     let newUser = this.userRepo.create({ ...data, role });
@@ -67,8 +85,13 @@ export class UsersService {
     return newUser;
   }
 
+  private async existEmail(email: string) {
+    const user = await this.findByEmail(email);
+    return !!user;
+  }
+
   async updateUser(id: number, changes: UpdateUserDto) {
-    const user = await this.userRepo.findOne({ id });
+    const user = await this.findOneUser(id);
     const { roleId } = changes;
     const role = (await this.rolesService.getRoleById(roleId)) || user.role;
     this.userRepo.merge(user, { ...changes, role });
@@ -78,17 +101,20 @@ export class UsersService {
     return this.findOneUser(updatedUser.id);
   }
 
-  remove(id: number) {
-    return this.userRepo.delete(id);
+  async remove(id: number) {
+    await this.userRepo.update(id, { active: false });
+    return this.userRepo.findOne(id);
   }
 
   async findByEmail(email: string) {
-    const user = await this.userRepo.find({ where: { email } });
-    return user ? user[0] : null;
+    const user = await this.userRepo.findOne({
+      where: { email, active: true },
+    });
+    return user;
   }
 
   async findByConditions(conditions: DeepPartial<User>) {
-    const user = await this.userRepo.find(conditions);
+    const user = await this.userRepo.find({ ...conditions });
     return user ? user[0] : null;
   }
 }

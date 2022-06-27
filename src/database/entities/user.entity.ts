@@ -47,12 +47,15 @@ export class User {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
+  @Exclude()
   @Column({ name: 'facebook_id', type: 'varchar', length: 256, nullable: true })
   facebookId: string;
 
+  @Exclude()
   @Column({ name: 'twitter_id', type: 'varchar', length: 256, nullable: true })
   twitterId: string;
 
+  @Exclude()
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',
@@ -61,6 +64,7 @@ export class User {
   })
   createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamptz',

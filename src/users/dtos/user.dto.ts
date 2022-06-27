@@ -11,11 +11,24 @@ import {
   ArrayNotEmpty,
   ArrayMinSize,
   IsEnum,
+  Validate,
+  MinLength,
 } from 'class-validator';
 
 import { PartialType, ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { AuthCodeTypes } from 'src/multi-factor-auth/enums/auth-codes.enum';
+import {
+  PasswordValidation,
+  PasswordValidationRequirement,
+} from 'class-validator-password-check';
+
+const passwordRequirements: PasswordValidationRequirement = {
+  mustContainLowerLetter: true,
+  mustContainNumber: true,
+  mustContainSpecialCharacter: true,
+  mustContainUpperLetter: true,
+};
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -55,6 +68,9 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: 'Password' })
+  @MinLength(8)
+  @MaxLength(20)
+  @Validate(PasswordValidation, [passwordRequirements])
   password: string;
 
   @IsNumber()
