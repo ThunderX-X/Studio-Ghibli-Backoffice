@@ -4,6 +4,7 @@ import {
   IsUrl,
   IsNotEmpty,
   IsPositive,
+  Min,
 } from 'class-validator';
 import { PartialType, ApiProperty } from '@nestjs/swagger';
 
@@ -27,6 +28,7 @@ export class CreateMovieDto {
   @IsNotEmpty()
   @IsPositive()
   @ApiProperty()
+  @Min(1900)
   readonly releaseYear: number;
 
   @IsUrl()
@@ -42,6 +44,7 @@ export class CreateMovieDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty()
+  @Min(1)
   readonly duration: number;
 
   @IsUrl()
