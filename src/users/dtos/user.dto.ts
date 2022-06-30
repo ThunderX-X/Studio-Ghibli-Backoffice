@@ -22,6 +22,7 @@ import {
   PasswordValidation,
   PasswordValidationRequirement,
 } from 'class-validator-password-check';
+import { AuthTypeUser } from 'src/database/entities/auth-types-user.entity';
 
 const passwordRequirements: PasswordValidationRequirement = {
   mustContainLowerLetter: true,

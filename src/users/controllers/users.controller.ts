@@ -31,14 +31,17 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ErrorResponse } from 'src/common/error-response.model';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
-import { Request } from 'express';
 import { Payload } from 'src/auth/models/payload.model';
+import { TwoFactorAuthService } from 'src/multi-factor-auth/services/two-factor-auth.service';
 
 @ApiTags('users')
 @Controller('users')
 @AplicationModule(ModulesEnum.USERS)
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private readonly twoFactorAuthService: TwoFactorAuthService,
+  ) {}
 
   @Post('createUser')
   @HttpCode(HttpStatus.CREATED)
@@ -46,7 +49,6 @@ export class UsersController {
   @RequiredPermissions(PermissionTypes.CREATE)
   @ApiBearerAuth()
   @ApiCreatedResponse()
-  @UseInterceptors(ClassSerializerInterceptor)
   @ApiBadRequestResponse({
     description: 'Bad Request',
     type: ErrorResponse,
@@ -67,7 +69,6 @@ export class UsersController {
   @ApiOperation({ summary: 'View logued user info' })
   @UseGuards(AuthGuard('Logued'))
   @ApiBearerAuth()
-  @UseInterceptors(ClassSerializerInterceptor)
   getMe(@Req() req) {
     const { sub: userId } = req.user as Payload;
     return this.getUser(userId);
@@ -78,7 +79,6 @@ export class UsersController {
   @UseGuards(AuthGuard('Logued'), RolesGuard)
   @RequiredPermissions(PermissionTypes.CREATE)
   @ApiBearerAuth()
-  @UseInterceptors(ClassSerializerInterceptor)
   getUsers() {
     return this.usersService.findAllUsers();
   }
@@ -89,16 +89,21 @@ export class UsersController {
   @UseGuards(AuthGuard('Logued'), RolesGuard)
   @RequiredPermissions(PermissionTypes.READ)
   @ApiBearerAuth()
-  @UseInterceptors(ClassSerializerInterceptor)
-  getUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOneUser(id);
+  async getUser(@Param('id', ParseIntPipe) id: number) {
+    const user = (await this.usersService.findOneUser(id)) as any;
+    const availableTwoFactors =
+      await this.twoFactorAuthService.getAvalilableAuthsUser(user.id);
+    user.twoFactorMethods = availableTwoFactors.map(
+      (method) => method.authType,
+    );
+
+    return user;
   }
 
   @Put(':id')
   @UseGuards(AuthGuard('Logued'), RolesGuard)
   @RequiredPermissions(PermissionTypes.UPDATE)
   @ApiBearerAuth()
-  @UseInterceptors(ClassSerializerInterceptor)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateUserDto,
@@ -110,7 +115,6 @@ export class UsersController {
   @UseGuards(AuthGuard('Logued'), RolesGuard)
   @RequiredPermissions(PermissionTypes.DELETE)
   @ApiBearerAuth()
-  @UseInterceptors(ClassSerializerInterceptor)
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }

@@ -9,6 +9,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { AuthTypeUser } from './auth-types-user.entity';
 
 @Entity({ name: 'users' })
 export class User {
