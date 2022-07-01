@@ -35,14 +35,12 @@ export default abstract class CrudService<Entity> {
     relations: string[] = [],
   ): Promise<Entity> {
     if (!id) return null;
-    const entity = this.repository.findOneOrFail(id, {
+    const entity = await this.repository.findOne(id, {
       relations,
       where: filters,
     });
     if (!entity)
-      throw new NotFoundException(
-        `Can't find the row with id: ${id} and conditions ${filters}`,
-      );
+      throw new NotFoundException(`Can't find entity with id: ${id}`);
     return entity;
   }
 
