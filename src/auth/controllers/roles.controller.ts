@@ -53,6 +53,26 @@ export class RolesController {
     return await this.rolesService.getAllRoles();
   }
 
+  @Get(':id')
+  @UseGuards(AuthGuard('Logued'), RolesGuard)
+  @RequiredPermissions(PermissionTypes.READ)
+  @ApiBearerAuth()
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    type: ErrorResponse,
+  })
+  @ApiForbiddenResponse({
+    description: 'Not authenticated',
+    type: ErrorResponse,
+  })
+  @ApiOperation({
+    summary: `This endpoint get a role with their permissions`,
+    description: `This endpoint get a role with their permissions`,
+  })
+  async GetRole(@Param('id') roleId: number) {
+    return await this.rolesService.getRoleById(roleId);
+  }
+
   @Post()
   @UseGuards(AuthGuard('Logued'), RolesGuard)
   @RequiredPermissions(PermissionTypes.CREATE)
@@ -93,7 +113,7 @@ export class RolesController {
   @ApiParam({ name: 'id', type: Number })
   @ApiBody({ type: UpdateRoleDto })
   async UpdateRole(
-    @Param() roleId: number,
+    @Param('id') roleId: number,
     @Body() updatedRole: UpdateRoleDto,
   ) {
     return await this.rolesService.updateRole(roleId, updatedRole);
@@ -116,7 +136,7 @@ export class RolesController {
     description: `This endpoint inativate a role`,
   })
   @ApiParam({ name: 'id', type: Number })
-  async DeleteRole(@Param() roleId: number) {
+  async DeleteRole(@Param('id') roleId: number) {
     return await this.rolesService.deleteRole(roleId);
   }
 }
