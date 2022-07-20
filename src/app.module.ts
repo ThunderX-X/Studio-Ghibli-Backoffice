@@ -8,6 +8,8 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
+import { AnalyticsController } from './analytics/controllers/analytics.controller';
+import { UserAnalyticsService } from './analytics/services/user-analytics.service';
 import config from './config';
 import * as Joi from 'joi';
 @Module({
@@ -54,7 +56,7 @@ import * as Joi from 'joi';
     CommonModule,
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AnalyticsController],
+  providers: [AppService, UserAnalyticsService],
 })
 export class AppModule {}
